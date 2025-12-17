@@ -8,8 +8,9 @@ Meaning:
 - git commit -m "I changed n=1 to n=2" (To save ur progress of a file (which means u are ready to push to GitHub)) 
 
 Be sure to have installed git on your device for using github
+Use your command prompt for all of this
 
-1. CREATE YOUR OWN BRANCH (DO THIS WHEN FIRST TIME DOING A CODE, IT IS TO CREATE A BRANC(like a copy) THAT WONT AFFECT THE MAIN CODE IN CASE SOMETHING GOES WRONG):
+1. CREATE YOUR OWN BRANCH (DO THIS WHEN FIRST TIME DOING A CODE, IT IS TO CREATE A BRANCH (like a copy) THAT WONT AFFECT THE MAIN CODE IN CASE SOMETHING GOES WRONG):
 - git clone https://github.com/aidelbtw/KedaiRuncit.git
 - cd KedaiRuncit
 - git checkout -b yourname-feature (example:aidel-storage)
