@@ -10,24 +10,24 @@ Meaning:
 Be sure to have installed git on your device for using github
 
 1. CREATE YOUR OWN BRANCH (DO THIS WHEN FIRST TIME DOING A CODE, IT IS TO CREATE A BRANC(like a copy) THAT WONT AFFECT THE MAIN CODE IN CASE SOMETHING GOES WRONG):
-git clone https://github.com/aidelbtw/KedaiRuncit.git
-cd KedaiRuncit
-git checkout -b yourname-feature (example:aidel-storage)
-git push -u origin yourname-feature
+- git clone https://github.com/aidelbtw/KedaiRuncit.git
+- cd KedaiRuncit
+- git checkout -b yourname-feature (example:aidel-storage)
+- git push -u origin yourname-feature
 
 
 2. WHEN CODING, DO THIS
-git checkout main
-git pull origin main
-git checkout yourname-feature
-git merge main
-CAN START EDITING YOUR FILES
+- git checkout main
+- git pull origin main
+- git checkout yourname-feature
+- git merge main
+- CAN START EDITING YOUR FILES
   
 
 3. THIS IS FOR WHEN YOU FINISH AND WANT TO PUSH TO THE GITHUB
-git add filename.java (Example: Login.java)
-git commit -m "Message of what u changed"
-git push origin yourname-feature
-go to github page
-click "compare & pull request"
-"create pull request", then let me know u made a request.
+- git add filename.java (Example: Login.java)
+- git commit -m "Message of what u changed"
+- git push origin yourname-feature
+- go to github page
+- click "compare & pull request"
+- "create pull request", then let me know u made a request.
