@@ -28,4 +28,8 @@ public class Employee {
     public String getPassword() {
         return password;
     }
+
+    public String getOutlet(){
+        return employeeID.substring(0, 3);
+    }
 }
