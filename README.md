@@ -25,7 +25,7 @@ Be sure to have installed git on your device for using github, and use your comm
   
 
 3. THIS IS FOR WHEN YOU FINISH AND WANT TO PUSH TO THE GITHUB
-- git add filename.java (Example: Login.java)
+- git add filename.java (Example: Login.java) / git add . for all changed files
 - git commit -m "Message of what u changed"
 - git push origin yourname-feature
 - go to github page
