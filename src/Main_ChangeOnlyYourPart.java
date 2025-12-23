@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public class Main_DONTCHANGE {
+public class Main_ChangeOnlyYourPart {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
@@ -12,8 +12,12 @@ public class Main_DONTCHANGE {
         
         //This will bring to LoginSystem to ask user for input of ID and 
         Employee currentEmployee = LoginSystem.login(dm.getEmployees());
-        if(currentEmployee == null) return;
+        if(currentEmployee == null) {
+            input.close();
+            return;
+        }
 
+        Attendance attendance = new Attendance(); // create one attendance per session
         boolean running = true;
 
         while (running) {
@@ -30,7 +34,7 @@ public class Main_DONTCHANGE {
 
             switch (choice) {
                 case 1:
-                    Attendance.record(currentEmployee,dm);
+                AttendanceMenu.menu(currentEmployee, dm, attendance);
                     break;
                 case 2:
                     //StockSystem.manage();
@@ -55,6 +59,6 @@ public class Main_DONTCHANGE {
         for (Employee e : dm.getEmployees()) {
             System.out.println(e.getEmployeeID() + " " + e.getEmployeeName() + " " + e.getRole());
         }
-
+        input.close();
     }
 }
