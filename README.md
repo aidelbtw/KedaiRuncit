@@ -19,10 +19,8 @@ Be sure to have installed git on your device for using github, and use your comm
 
 
 2. WHEN CODING, DO THIS
-- git checkout main
-- git pull origin main
 - git checkout yourname-feature
-- git merge main
+- git pull origin main
 - CAN START EDITING YOUR FILES
   
 
