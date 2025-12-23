@@ -2,10 +2,12 @@ Repository for Kedai Runcit WIX1002 (Fundamentals of Programming) Semester 1 25/
 
 Meaning:
 - git clone (To copy the GitHub repository code into your local IDE/machine.)
-- git push (To basically put your new code from your IDE to your branch on GitHub.)
 - git checkout (To switch between existing branches or to create and switch to a new branch.)
 - git pull (To download (or "take") the latest changes from the remote repository branch (like main) and apply them to your local branch.)
-- git commit -m "I changed n=1 to n=2" (To save ur progress of a file (which means u are ready to push to GitHub)) 
+- git add (To add whichever files which are ready to be saved (STEP 1)
+- git commit -m "hello" (To actually save ur file progress with message "hello" (meaning u are ready to push to GitHub) (STEP 2)
+- git push (To basically put your saved file code from your IDE to your branch on GitHub. (STEP 3 and done)
+
 
 Be sure to have installed git on your device for using github, and use your command prompt for all of this
 
