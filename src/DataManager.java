@@ -87,7 +87,7 @@ public class DataManager {
             }
         } catch (IOException e) {
             System.out.println("Error reading product file: " + filename + " - " + e.getMessage());
-        }
+        } 
     }
 
     public String getOutletName(String outletCode) {
@@ -122,7 +122,7 @@ public class DataManager {
 
     public void saveProducts() {
         // Use the same path structure as the load methods
-        String savePath = "src/data/model.csv";
+        String savePath = "data/model.csv";
         
         try (PrintWriter pw = new PrintWriter(new FileWriter(savePath))) {
             pw.println("\uFEFFModel,Price,C60,C61,C62,C63,C64,C65,C66,C67,C68,C69");
