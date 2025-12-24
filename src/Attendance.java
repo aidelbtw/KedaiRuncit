@@ -12,7 +12,7 @@ public class Attendance {
         return formatted;
     }
 
-    //This one is to connect with the main to see whether clocked in or out
+    //This one is to connect with the attendance menu to see whether clocked in or out
     public  boolean hasClockedIn(){
         return clockInTime != null;
     }

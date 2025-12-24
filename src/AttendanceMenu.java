@@ -41,6 +41,7 @@ public class AttendanceMenu {
                         break;
                     case 2:
                         goBack = true;
+                        break;
                     default:
                         System.out.println("Invalid Option");
                         break;
