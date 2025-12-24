@@ -10,15 +10,26 @@ public class Main_ChangeOnlyYourPart {
         dm.loadEmployees("data/employee.csv");
         dm.loadOutlets("data/outlet.csv");
         
-        //This will bring to LoginSystem to ask user for input of ID and 
-        Employee currentEmployee = LoginSystem.login(dm.getEmployees());
-        if(currentEmployee == null) {
-            input.close();
-            return;
-        }
+        Employee currentEmployee = null;
+        boolean go = true;
 
-        Attendance attendance = new Attendance(); // create one attendance per session
-        boolean running = true;
+        while (go){
+            System.out.println("===== Welcome to Kedai Runcit System =====");
+            System.out.println("1. Log in");
+            System.out.println("2. Shutdown");
+            System.out.print("Enter your choice: ");
+            int pick = input.nextInt();
+            input.nextLine();
+            
+            switch (pick) {
+                case 1:
+                    //This will bring to LoginSystem to ask user for input of ID and 
+                    currentEmployee = LoginSystem.login(dm.getEmployees());
+                    if(currentEmployee == null) {
+                    return;
+                    }
+
+                    boolean running = true;
 
         while (running) {
             System.out.println("====== Welcome " + currentEmployee.getEmployeeName() + " to Kedai Runcit ======");
@@ -34,7 +45,7 @@ public class Main_ChangeOnlyYourPart {
 
             switch (choice) {
                 case 1:
-                AttendanceMenu.menu(currentEmployee, dm, attendance);
+                AttendanceMenu.menu(currentEmployee, dm, currentEmployee.getAttendance());
                     break;
                 case 2:
                     //StockSystem.manage();
@@ -53,12 +64,19 @@ public class Main_ChangeOnlyYourPart {
                     running = false;
             }            
         }
-        System.out.println("Loaded Employees: " + dm.getEmployees().size());
-
-        System.out.println("EmployeeID EmployeeName Role");
-        for (Employee e : dm.getEmployees()) {
-            System.out.println(e.getEmployeeID() + " " + e.getEmployeeName() + " " + e.getRole());
+                break;
+                case 2:
+                    go = false;
+                    return;
+                default:
+                    System.out.println("Invalid Option");
         }
-        input.close();
+        //System.out.println("Loaded Employees: " + dm.getEmployees().size());
+        //System.out.println("EmployeeID EmployeeName Role");
+        //for (Employee e : dm.getEmployees()) {
+        //    System.out.println(e.getEmployeeID() + " " + e.getEmployeeName() + " " + e.getRole());
+        //}    
     }
+
+}
 }

@@ -3,6 +3,7 @@ public class Employee {
     private String employeeName;
     private String role;
     private String password;
+    private Attendance attendance;
 
     // Constructor
     public Employee(String employeeID, String employeeName, String role, String password) {
@@ -10,6 +11,7 @@ public class Employee {
         this.employeeName = employeeName;
         this.role = role;
         this.password = password;
+        this.attendance = new Attendance();
     }
 
     // Getters
@@ -32,4 +34,9 @@ public class Employee {
     public String getOutlet(){
         return employeeID.substring(0, 3);
     }
+
+    public Attendance getAttendance() {
+    return attendance;
+    }
+
 }
