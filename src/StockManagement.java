@@ -379,7 +379,7 @@ public class StockManagement {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
         
-        String filename = "receipts_" + date.format(dateFormatter) + ".txt";
+        String filename = "receipts/receipts_" + date.format(dateFormatter) + ".txt";
         
         try (PrintWriter pw = new PrintWriter(new FileWriter(filename, true))) { // Append mode
             pw.println("=== " + transactionType + " RECEIPT ===");

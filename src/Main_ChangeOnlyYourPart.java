@@ -8,9 +8,9 @@ public class Main_ChangeOnlyYourPart {
         DataManager dm = new DataManager();
 
         // Since data folder is inside src folder
-        dm.loadEmployees("src/data/employee.csv");
-        dm.loadOutlets("src/data/outlet.csv");
-        dm.loadProducts("src/data/model.csv");
+        dm.loadEmployees("data/employee.csv");
+        dm.loadOutlets("data/outlet.csv");
+        dm.loadProducts("data/model.csv");
         
         // Debug: Print loaded data
         System.out.println("Loaded Employees: " + dm.getEmployees().size());
@@ -26,7 +26,7 @@ public class Main_ChangeOnlyYourPart {
         boolean go = true;
 
         while (go){
-            System.out.println("===== Welcome to Kedai Runcit System =====");
+            System.out.println("\n===== Welcome to Kedai Runcit System =====");
             System.out.println("1. Log in");
             System.out.println("2. Shutdown");
             System.out.print("Enter your choice: ");
@@ -45,7 +45,7 @@ public class Main_ChangeOnlyYourPart {
                     boolean running = true;
 
                     while (running) {
-                        System.out.println("====== Welcome " + currentEmployee.getEmployeeName() + " to Kedai Runcit ======");
+                        System.out.println("\n====== Welcome " + currentEmployee.getEmployeeName() + " to Kedai Runcit ======");
                         System.out.println("1. Attendance");
                         System.out.println("2. Stock Management");
                         System.out.println("3. Sales");

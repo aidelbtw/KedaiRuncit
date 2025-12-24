@@ -66,7 +66,8 @@ public class SalesSystem {
             product.setStockByOutletCode(outletCode, dm, currentStock - quantity);
             
             System.out.println("Unit Price: RM" + String.format("%.2f", unitPrice));
-            System.out.print("Are there more items purchased? (Y/N): ");
+            System.out.println("Total: RM " + String.format("%.2f", unitPrice) + " x" + quantity + " = RM" + String.format("%.2f", unitPrice*quantity));
+            System.out.print("\nAre there more items purchased? (Y/N): ");
             String more = input.nextLine();
             if (!more.toUpperCase().equals("Y")) {
                 hasMoreItems = false;
@@ -78,7 +79,7 @@ public class SalesSystem {
             return;
         }
         
-        System.out.print("Enter transaction method: ");
+        System.out.print("\nEnter transaction method: ");
         String transactionMethod = input.nextLine();
         
         System.out.println("Subtotal: RM" + String.format("%.2f", totalPrice));
@@ -125,7 +126,7 @@ public class SalesSystem {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
         
-        String filename = "sales_" + date.format(dateFormatter) + ".txt";
+        String filename = "sales/sales_" + date.format(dateFormatter) + ".txt";
         
         try (PrintWriter pw = new PrintWriter(new FileWriter(filename, true))) { // Append mode
             pw.println("=== SALES RECEIPT ===");

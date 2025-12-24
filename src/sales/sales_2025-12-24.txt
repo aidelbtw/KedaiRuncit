@@ -1,0 +1,26 @@
+=== SALES RECEIPT ===
+Date: 2025-12-24
+Time: 11:35 PM
+Outlet: C60 (Kuala Lumpur City Centre)
+Customer Name: Joe
+Items Purchased: 
+- DW2300-1 (Quantity: 10, Unit Price: RM399.00)
+- DW2300-2 (Quantity: 1, Unit Price: RM399.00)
+Transaction Method: bank
+Total Price: RM4389.00
+Employee: Tan Guan Han
+=====================================
+
+=== SALES RECEIPT ===
+Date: 2025-12-24
+Time: 11:50 PM
+Outlet: C61 (MidValley)
+Customer Name: Ahmad Ahmad
+Items Purchased: 
+- DW2300-1 (Quantity: 2, Unit Price: RM399.00)
+- DW2300-1 (Quantity: 1, Unit Price: RM399.00)
+Transaction Method: Touch N Go
+Total Price: RM1197.00
+Employee: Tan Guan Han
+=====================================
+
