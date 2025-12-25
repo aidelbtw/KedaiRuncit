@@ -1,0 +1,12 @@
+=== SALES RECEIPT ===
+Date: 2025-12-25
+Time: 03:28 pm
+Outlet: C68 (1 Utama)
+Customer Name: SW2500-1
+Items Purchased: 
+- SW2500-1 (Quantity: 1, Unit Price: RM845.00)
+Transaction Method: Bank transfer
+Total Price: RM845.00
+Employee: Tan Guan Han
+=====================================
+
