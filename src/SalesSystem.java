@@ -1,89 +1,143 @@
 import java.io.*;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class SalesSystem {
-    
-    public static void sell(DataManager dm, Employee employee) {
-        Scanner input = new Scanner(System.in);
-        String outletCode = employee.getOutlet();
-        
-        if(outletCode.equals("HQ") || outletCode.length() < 3) {
-             System.out.println("Available Outlets: " + dm.getOutletCodes());
-             System.out.print("Enter Outlet Code: ");
-             outletCode = input.nextLine().toUpperCase();
-        }
-        
-        if (dm.getOutletIndex(outletCode) == -1) {
-            System.out.println("Invalid Outlet.");
-            return;
-        }
 
-        System.out.println("\n=== New Sale at " + outletCode + " ===");
+    private static Scanner input = new Scanner(System.in);
+
+    public static void sell(DataManager dm, Employee user) {
+        System.out.println("\n=== Record New Sale ===");
+        
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        String timeStr = time.format(DateTimeFormatter.ofPattern("hh:mm a"));
+        
+        System.out.println("Date: " + date);
+        System.out.println("Time: " + timeStr);
+
+        // === CHANGE: Ask for Outlet Code Manually ===
+        System.out.print("Enter Outlet Code (e.g., C60): ");
+        String outletCode = input.nextLine().trim();
+        // ============================================
+
         System.out.print("Customer Name: ");
-        String customer = input.nextLine();
-        
-        List<String> cartItems = new ArrayList<>();
-        double total = 0.0;
-        
-        while(true) {
-            System.out.print("Enter Model (or 'done'): ");
-            String model = input.nextLine();
-            if(model.equalsIgnoreCase("done")) break;
+        String customerName = input.nextLine();
 
-            Product p = dm.getProductByModel(model);
-            if(p == null) {
-                System.out.println("Model not found.");
+        List<Product> soldProducts = new ArrayList<>();
+        List<Integer> soldQuantities = new ArrayList<>();
+        double subtotal = 0.0;
+
+        // Item Selection Loop
+        System.out.println("Item(s) Purchased:");
+        boolean addingItems = true;
+
+        while (addingItems) {
+            System.out.print("Enter Model: ");
+            String model = input.nextLine();
+            
+            Product p = dm.getProduct(model);
+            if (p == null) {
+                System.out.println("Error: Model not found.");
                 continue;
             }
 
-            int stock = p.getStockByOutletCode(outletCode, dm);
-            System.out.println("Stock: " + stock + " | Price: RM" + p.getPrice());
-            System.out.print("Qty: ");
-            int qty = input.nextInt(); input.nextLine();
+            System.out.print("Enter Quantity: ");
+            int qty;
+            try {
+                qty = Integer.parseInt(input.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number.");
+                continue;
+            }
 
-            if(qty > stock) {
-                System.out.println("Not enough stock.");
-            } else {
-                p.setStockByOutletCode(outletCode, dm, stock - qty);
-                double sub = p.getPrice() * qty;
-                total += sub;
-                cartItems.add(model + ":" + qty + ":" + sub);
-                System.out.println("Added.");
+            // Check Stock at the SPECIFIC OUTLET entered above
+            int currentStock = p.getStockByOutletCode(outletCode, dm);
+            
+            if (qty > currentStock) {
+                System.out.println("Error: Insufficient stock at " + outletCode + ". Available: " + currentStock);
+                continue;
+            }
+
+            // Add to cart
+            soldProducts.add(p);
+            soldQuantities.add(qty);
+            
+            double lineTotal = p.getPrice() * qty;
+            subtotal += lineTotal;
+            System.out.println("Unit Price: RM" + p.getPrice());
+
+            System.out.print("Are there more items purchased? (Y/N): ");
+            String choice = input.nextLine();
+            if (choice.equalsIgnoreCase("N")) {
+                addingItems = false;
             }
         }
 
-        if(total == 0) return;
+        if (soldProducts.isEmpty()) {
+            System.out.println("Transaction cancelled.");
+            return;
+        }
 
-        System.out.println("Total: RM" + String.format("%.2f", total));
-        System.out.print("Payment Method (Cash/Card/QR): ");
+        // Finalize
+        System.out.print("Enter transaction method: ");
         String method = input.nextLine();
 
-        dm.saveProducts();
-        saveReceipt(outletCode, customer, cartItems, total, method, employee);
-        logSaleForAnalytics(outletCode, customer, total, employee.getEmployeeID());
-        System.out.println("Sale Complete.");
+        System.out.println("Subtotal: RM" + String.format("%.2f", subtotal));
+        
+        // Update Stock
+        for (int i = 0; i < soldProducts.size(); i++) {
+            Product p = soldProducts.get(i);
+            int qty = soldQuantities.get(i);
+            int currentStock = p.getStockByOutletCode(outletCode, dm);
+            
+            // Deduct stock from the manually entered outlet
+            p.setStockByOutletCode(outletCode, dm, currentStock - qty);
+        }
+        
+        dm.saveProducts(); 
+        System.out.println("Transaction successful.");
+        System.out.println("Sale recorded successfully.");
+        System.out.println("Model quantities updated successfully.");
+
+        // Generate Receipt
+        saveReceipt(date, timeStr, customerName, outletCode, user.getName(), method, subtotal, soldProducts, soldQuantities);
     }
 
-    private static void saveReceipt(String outlet, String cust, List<String> items, double total, String method, Employee emp) {
-        // PATH: ../sales/Receipt...
-        String filename = "../sales/Receipt_" + System.currentTimeMillis() + ".txt";
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
-            pw.println("=== RECEIPT ===");
-            pw.println("Date: " + LocalDate.now());
-            pw.println("Outlet: " + outlet);
-            pw.println("Customer: " + cust);
-            for(String i : items) pw.println("- " + i);
-            pw.println("Total: RM" + total);
-            pw.println("Staff: " + emp.getEmployeeName());
-            pw.println("Method: " + method);
-        } catch (IOException e) { System.out.println("Receipt saved to " + filename); }
-    }
+    private static void saveReceipt(LocalDate date, String time, String customer, String outlet, String empName, String method, double total, List<Product> items, List<Integer> qtys) {
+        String filename = "../sales/sales_" + date + ".txt";
+        
+        try (FileWriter fw = new FileWriter(filename, true);
+             PrintWriter pw = new PrintWriter(fw)) {
+            
+            pw.println("=========================================");
+            pw.println("             OFFICIAL RECEIPT            ");
+            pw.println("=========================================");
+            pw.println("Date: " + date + "  Time: " + time);
+            pw.println("Outlet: " + outlet);  // Shows the manually entered outlet
+            pw.println("Served By: " + empName);
+            pw.println("Customer: " + customer);
+            pw.println("-----------------------------------------");
+            pw.println(String.format("%-15s %-5s %10s", "Model", "Qty", "Price(RM)"));
+            
+            for (int i = 0; i < items.size(); i++) {
+                Product p = items.get(i);
+                int q = qtys.get(i);
+                pw.println(String.format("%-15s %-5d %10.2f", p.getModel(), q, (p.getPrice() * q)));
+            }
+            
+            pw.println("-----------------------------------------");
+            pw.println("Total Amount:       RM" + String.format("%.2f", total));
+            pw.println("Payment Method:     " + method);
+            pw.println("=========================================");
+            pw.println(""); 
+            
+            System.out.println("Receipt generated: " + filename);
 
-    private static void logSaleForAnalytics(String outlet, String cust, double total, String empID) {
-        // PATH: ../data/sales_history.csv
-        try (PrintWriter pw = new PrintWriter(new FileWriter("../data/sales_history.csv", true))) {
-            pw.println(LocalDate.now() + "," + outlet + "," + total + "," + empID);
-        } catch (IOException e) { System.out.println("Log Error: " + e.getMessage()); }
+        } catch (IOException e) {
+            System.out.println("Error saving receipt: " + e.getMessage());
+        }
     }
 }
