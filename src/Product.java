@@ -1,7 +1,7 @@
 public class Product {
     private String model;
     private double price;
-    private int[] stockLevels; // Array to store stock for each outlet
+    private int[] stockLevels; 
 
     public Product(String model, double price, int[] stockLevels) {
         this.model = model;
@@ -9,48 +9,24 @@ public class Product {
         this.stockLevels = stockLevels;
     }
 
-    public String getModel() {
-        return model;
-    }
+    public String getModel() { return model; }
+    public double getPrice() { return price; }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public int getStockByOutletIndex(int outletIndex) {
-        if (outletIndex >= 0 && outletIndex < stockLevels.length) {
-            return stockLevels[outletIndex];
-        }
-        return 0;
-    }
-
-    public void setStockByOutletIndex(int outletIndex, int quantity) {
-        if (outletIndex >= 0 && outletIndex < stockLevels.length) {
-            stockLevels[outletIndex] = quantity;
-        }
-    }
+    public void setPrice(double price) { this.price = price; }
 
     public int getStockByOutletCode(String outletCode, DataManager dm) {
-        int outletIndex = getOutletIndex(outletCode, dm);
-        if (outletIndex >= 0 && outletIndex < stockLevels.length) {
-            return stockLevels[outletIndex];
-        }
+        int index = dm.getOutletIndex(outletCode);
+        if (index >= 0 && index < stockLevels.length) return stockLevels[index];
         return 0;
     }
 
     public void setStockByOutletCode(String outletCode, DataManager dm, int quantity) {
-        int outletIndex = getOutletIndex(outletCode, dm);
-        if (outletIndex >= 0 && outletIndex < stockLevels.length) {
-            stockLevels[outletIndex] = quantity;
-        }
+        int index = dm.getOutletIndex(outletCode);
+        if (index >= 0 && index < stockLevels.length) stockLevels[index] = quantity;
     }
-
-    private int getOutletIndex(String outletCode, DataManager dm) {
-        for (int i = 0; i < dm.getOutletCodes().size(); i++) {
-            if (dm.getOutletCodes().get(i).equals(outletCode)) {
-                return i;
-            }
-        }
-        return -1; 
+    
+    public int getStockByOutletIndex(int i) {
+        if(i >= 0 && i < stockLevels.length) return stockLevels[i];
+        return 0;
     }
 }
