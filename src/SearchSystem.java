@@ -3,7 +3,8 @@ import java.util.*;
 
 public class SearchSystem {
 
-    public static void searchModel(DataManager dm) {
+    // === CHANGED NAME FROM searchModel TO search ===
+    public static void search(DataManager dm) {
         Scanner input = new Scanner(System.in);
         System.out.println("\n=== Search Information ===");
         System.out.println("1. Stock Information");
@@ -27,7 +28,8 @@ public class SearchSystem {
         System.out.print("Search Model Name: ");
         String modelName = input.nextLine();
         
-        Product product = dm.getProductByModel(modelName);
+        // Ensure getProductByModel exists in DataManager or use getProduct
+        Product product = dm.getProduct(modelName); 
         
         if (product == null) {
             System.out.println("Searching...\nModel not found.");
@@ -54,7 +56,7 @@ public class SearchSystem {
         System.out.print("Search keyword (Date/Customer/Model): ");
         String keyword = input.nextLine().toLowerCase();
         
-        File folder = new File("sales/"); 
+        File folder = new File("../sales/"); 
         File[] salesFiles = folder.listFiles((dir, name) -> name.startsWith("sales_") && name.endsWith(".txt"));
 
         if (salesFiles == null || salesFiles.length == 0) {
@@ -76,7 +78,7 @@ public class SearchSystem {
 
                     if (line.toLowerCase().contains(keyword)) matchFound = true;
 
-                    if (line.contains("=====================================")) {
+                    if (line.contains("=========================================")) {
                         if (matchFound) {
                             System.out.println("Sales Record Found:");
                             System.out.println(currentRecord.toString());
@@ -91,5 +93,4 @@ public class SearchSystem {
         if (!found) System.out.println("No matching sales records found.");
     }
 }
-
 
