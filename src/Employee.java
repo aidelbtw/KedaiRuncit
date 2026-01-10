@@ -5,7 +5,6 @@ public class Employee {
     private String password;
     private Attendance attendance;
 
-    // Constructor
     public Employee(String employeeID, String employeeName, String role, String password) {
         this.employeeID = employeeID;
         this.employeeName = employeeName;
@@ -14,29 +13,20 @@ public class Employee {
         this.attendance = new Attendance();
     }
 
-    // Getters
-    public String getEmployeeID() {
-        return employeeID;
+    public String getEmployeeID() { return employeeID; }
+    public String getEmployeeName() { return employeeName; }
+    public String getRole() { return role; }
+    public String getPassword() { return password; }
+    
+    // Helper to extract outlet code from ID (e.g., C6001 -> C60)
+    public String getOutlet() {
+        if (employeeID.length() >= 3) return employeeID.substring(0, 3);
+        return "HQ";
     }
 
-    public String getEmployeeName() {
-        return employeeName;
-    }
+    public Attendance getAttendance() { return attendance; }
 
-    public String getRole() {
-        return role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getOutlet(){
-        return employeeID.substring(0, 3);
-    }
-
-    public Attendance getAttendance() {
-    return attendance;
-    }
-
+    // Setters for Edit Functionality
+    public void setPassword(String password) { this.password = password; }
+    public void setEmployeeName(String name) { this.employeeName = name; }
 }
