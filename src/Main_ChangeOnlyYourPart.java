@@ -67,10 +67,10 @@ public class Main_ChangeOnlyYourPart {
                                SalesSystem.sell(dm, currentEmployee);
                                 break;
                             case 4:
-                               // SearchSystem.search();
+                               SearchSystem.searchModel(dm, input);
                                 break;
                             case 5:
-                                //EditSystem.edit();
+                                EditInformation.editStock(dm, input);
                                 break;
                             case 6:
                                 System.out.println("Logged out");

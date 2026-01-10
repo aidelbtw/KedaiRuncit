@@ -1,94 +1,103 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
+public class SearchSystem {
 
-public class SearchInformation {
+    public static void searchModel(DataManager dm, Scanner input) {
+        System.out.println("\n=== Search Information ===");
+        System.out.println("1. Stock Information");
+        System.out.println("2. Sales Information");
+        System.out.print("Choose search type: ");
+        int choice = input.nextInt();
+        input.nextLine(); 
 
-    public static void searchModel(ArrayList<Model> models, Scanner input) {
-
-        ArrayList<String> models = new ArrayList<>();
-        Scanner input = new Scanner(System.in); 
-
-        System.out.print("Search Model Name: ");
-        String kw = input.nextLine();
-
-        boolean foundModel = false;
-
-        for (Model mod : models) {
-            if (mod.name.equalsIgnoreCase(kw)) {
-                found = true;
-
-                System.out.println("\nModel: " + mod.name);
-                System.out.println("Unit Price: RM" + mod.price);
-                System.out.println("Stock by Outlet:");
-                System.out.println("Kuala Lumpur City Centre: " + mod.stock[0]
-                        + "  MidValley: " + mod.stock[1]
-                        + "  Sunway Velocity: " + mod.stock[2]
-                        + "  IOI City Mall: " + mod.stock[3]
-                        + "  Lalaport: " + mod.stock[4]
-                        + "  Kuala Lumpur East Mall: " + mod.stock[5]
-                        + "  NU Sentral: " + mod.stock[6]
-                        + "  Pavilion Kuala Lumpur: " + mod.stock[7]
-                        + "  Bukit Bintang: " + mod.stock[8]
-                        + "  One Utama: " + mod.stock[9]
-                        + "  MyTown: " + mod.stock[10]); );
-                break;
-            }
-        }
-
-        if (!found) {
-            System.out.println("Model information not found.");
+        switch (choice) {
+            case 1 -> searchStock(dm, input);
+            case 2 -> searchSales(input);
+            default -> System.out.println("Invalid choice.");
         }
     }
 
-   
-    public static void searchSales(ArrayList<Sale> sales, Scanner input) {
+    private static void searchStock(DataManager dm, Scanner input) {
+        System.out.print("Search Model Name: ");
+        String modelName = input.nextLine();
+        
+        Product product = dm.getProductByModel(modelName); 
+        
+        if (product == null) {
+            System.out.println("Searching...");
+            System.out.println("Model not found.");
+            return;
+        }
 
-         ArrayList<String> sales = new ArrayList<>();
-        Scanner input = new Scanner(System.in); 
+        System.out.println("Searching...");
+        System.out.println("Model: " + product.getModel());
+        System.out.println("Unit Price: RM" + String.format("%.2f", product.getPrice()));
+        System.out.println("Stock by Outlet:");
 
+        List<String> codes = dm.getOutletCodes(); 
+        for (int i = 0; i < codes.size(); i++) {
+            String code = codes.get(i);
+            String outletName = dm.getOutletName(code); 
+            int qty = product.getStockByOutletIndex(i); 
+            
+            System.out.printf("%s: %d  ", outletName, qty);
+            
+            if ((i + 1) % 2 == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println();
+    }
 
-        System.out.print("Search keyword (date/customer name /model name ): ");
-        String kw = input.nextLine().toLowerCase();
+    private static void searchSales(Scanner input) {
+        System.out.print("Search keyword (Date/Customer/Model): ");
+        String keyword = input.nextLine().toLowerCase();
+        
+        File folder = new File("sales/");
+        File[] salesFiles = folder.listFiles((dir, name) -> name.startsWith("sales_") && name.endsWith(".txt"));
 
+        if (salesFiles == null || salesFiles.length == 0) {
+            System.out.println("No sales records found.");
+            return;
+        }
+
+        System.out.println("Searching...");
         boolean found = false;
 
-        for (Sale sal : sales) {
-            if (sal.customer.toLowerCase().contains(kw)
-                    || sal.model.toLowerCase().contains(kw)
-                    || sal.date.contains(kw)) {
+        for (File file : salesFiles) {
+            try (Scanner fileScanner = new Scanner(file)) {
+                StringBuilder currentRecord = new StringBuilder();
+                boolean matchFound = false;
 
-                found = true;
+                while (fileScanner.hasNextLine()) {
+                    String line = fileScanner.nextLine();
+                    currentRecord.append(line).append("\n");
 
-                System.out.println("\nSales Record Found:");
-                System.out.println("Date: " + sal.date + "  Time: " + sal.time);
-                System.out.println("Customer: " + sal.customer);
-                System.out.println("Model: " + sal.model);
-                System.out.println("Quantity: " + sal.quantity);
-                System.out.println("Total: " +"RM" + sal.price);
-                System.out.println("Transaction Method: " + sal.method);
-                System.out.println("Employee: " + sal.employee);
-                System.out.println("Status: Transaction verified.");
+                    if (line.toLowerCase().contains(keyword)) {
+                        matchFound = true;
+                    }
+
+                    if (line.contains("=====================================")) {
+                        if (matchFound) {
+                            System.out.println("Sales Record Found:");
+                            System.out.println(currentRecord.toString());
+                            found = true;
+                        }
+                        currentRecord.setLength(0); 
+                        matchFound = false;
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                System.out.println("Error accessing sales data.");
             }
         }
 
         if (!found) {
-            System.out.println("Sales record not found.");
+            System.out.println("No matching sales records found.");
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-        )
-
 
 
 
