@@ -6,7 +6,7 @@ Customer Name: Joe
 Items Purchased: 
 - DW2300-1 (Quantity: 10, Unit Price: RM399.00)
 - DW2300-2 (Quantity: 1, Unit Price: RM399.00)
-Transaction Method: bank
+Transaction Method: Touch N Go
 Total Price: RM4389.00
 Employee: Tan Guan Han
 =====================================
@@ -23,4 +23,3 @@ Transaction Method: Touch N Go
 Total Price: RM1197.00
 Employee: Tan Guan Han
 =====================================
-
