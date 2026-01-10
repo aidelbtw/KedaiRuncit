@@ -61,8 +61,8 @@ public class Main_ChangeOnlyYourPart {
                                 break;
                             case 2: StockManagement.manage(dm, user); break;
                             case 3: SalesSystem.sell(dm, user); break;
-                            case 4: SearchSystem.search(dm); break;
-                            case 5: EditInformation.edit(dm, user); break;
+                            case 4: SearchSystem.searchModel(dm); break;
+                            case 5: EditInformation.editStock(dm, user); break;
                             case 6: AnalyticsSystem.showMenu(); break;
                             case 7: 
                                 if(user.getRole().equalsIgnoreCase("Manager")) LoginSystem.registerEmployee(dm); 
