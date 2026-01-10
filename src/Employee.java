@@ -1,6 +1,6 @@
 public class Employee {
     private String employeeID;
-    private String employeeName;
+    private String employeeName; // Variable is named 'employeeName'
     private String role;
     private String password;
     private Attendance attendance;
@@ -29,4 +29,10 @@ public class Employee {
     // Setters for Edit Functionality
     public void setPassword(String password) { this.password = password; }
     public void setEmployeeName(String name) { this.employeeName = name; }
+
+    // === THE FIX IS HERE ===
+    // This allows StockManagement to call emp.getName() without errors
+    public String getName() {
+        return this.employeeName; // Fixed: changed 'username' to 'employeeName'
+    }
 }
