@@ -1,24 +1,47 @@
-import java.util.Scanner;
-import java.util.List;
+import java.util.*;
+
 public class LoginSystem {
     public static Employee login(List<Employee> employees) {
         Scanner input = new Scanner(System.in);
-
         System.out.print("Employee ID: ");
         String id = input.nextLine();
-
         System.out.print("Password: ");
-        String password = input.nextLine();
+        String pass = input.nextLine();
 
-        //After user inputs, system will search thru data of employee.csv to find a match and login, if not will fail
-        for(Employee staff : employees){
-            if(staff.getEmployeeID().equals(id) && staff.getPassword().equals(password)){
-                System.out.println("Login Sucessful!");
-                System.out.println("Welcome, " + staff.getEmployeeName());
-                return staff;
+        for(Employee e : employees){
+            if(e.getEmployeeID().equalsIgnoreCase(id) && e.getPassword().equals(pass)){
+                System.out.println("Login Successful! Welcome, " + e.getEmployeeName());
+                return e;
             }
         }
-        System.out.println("Login Failed: Invalid User ID or Password.");
+        System.out.println("Invalid Credentials.");
         return null;
+    }
+
+    public static void registerEmployee(DataManager dm) {
+        Scanner input = new Scanner(System.in);
+        System.out.println("\n=== Employee Registration ===");
+        System.out.print("Enter New ID (e.g. C6099): ");
+        String id = input.nextLine();
+        
+        // Check duplicate
+        for(Employee e : dm.getEmployees()) {
+            if(e.getEmployeeID().equalsIgnoreCase(id)) {
+                System.out.println("ID already exists!");
+                return;
+            }
+        }
+
+        System.out.print("Enter Name: ");
+        String name = input.nextLine();
+        System.out.print("Enter Role (Manager/Full-time/Part-time): ");
+        String role = input.nextLine();
+        System.out.print("Enter Password: ");
+        String pass = input.nextLine();
+
+        Employee newEmp = new Employee(id, name, role, pass);
+        dm.getEmployees().add(newEmp);
+        dm.saveEmployees();
+        System.out.println("Employee registered successfully.");
     }
 }
