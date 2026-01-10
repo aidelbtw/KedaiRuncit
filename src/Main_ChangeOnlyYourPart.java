@@ -31,8 +31,16 @@ public class Main_ChangeOnlyYourPart {
             
             if(ch == 2) {
                 System.out.println("Initiating Shutdown Sequence...");
-                // Auto-Email feature
-                EmailService.sendDailyReport(dm); 
+                
+                // === FIX START: Ask for email so we can pass it to the service ===
+                input.nextLine(); // Clear the buffer after nextInt()
+                System.out.print("Enter Recipient Email: ");
+                String email = input.nextLine();
+                
+                // Now passing BOTH DataManager and the email string
+                EmailService.sendDailyReport(dm, email); 
+                // === FIX END ===
+                
                 System.out.println("System Closed. Goodbye.");
                 break;
             }
@@ -40,29 +48,33 @@ public class Main_ChangeOnlyYourPart {
             if(ch == 1) {
                 Employee user = LoginSystem.login(dm.getEmployees());
                 if(user != null) {
+                    // user.getAttendance().setDataManager(dm); // Ensure Attendance has this method if you use it
                     boolean loggedIn = true;
                     while(loggedIn) {
                         System.out.println("\n--- Dashboard: " + user.getEmployeeName() + " ---");
                         System.out.println("1. Attendance");
                         System.out.println("2. Stock Management");
                         System.out.println("3. Sales System");
-                        System.out.println("4. Search System");
-                        System.out.println("5. Edit Information");
+                        System.out.println("4. Search Products");
+                        System.out.println("5. Edit Profile/Product");
                         System.out.println("6. Analytics & Performance");
                         System.out.println("7. Register New Employee");
                         System.out.println("8. Logout");
                         System.out.print("Choice: ");
                         
-                        int action = input.nextInt();
+                        int action = -1; 
+                        try { action = input.nextInt(); } catch(Exception e) { input.nextLine(); }
+
                         switch(action) {
-                            case 1: 
-                                if(!user.getAttendance().hasClockedIn()) user.getAttendance().clockIn(user);
-                                else user.getAttendance().clockOut(user);
-                                break;
+                        case 1: 
+                            // Pass 'dm' into clockIn and clockOut
+                            if(!user.getAttendance().hasClockedIn()) user.getAttendance().clockIn(user, dm);
+                            else user.getAttendance().clockOut(user, dm);
+                            break;
                             case 2: StockManagement.manage(dm, user); break;
                             case 3: SalesSystem.sell(dm, user); break;
-                            case 4: SearchSystem.searchModel(dm); break;
-                            case 5: EditInformation.editStock(dm, user); break;
+                            case 4: SearchSystem.search(dm); break;
+                            case 5: EditSystem.edit(dm, user); break;
                             case 6: AnalyticsSystem.showMenu(); break;
                             case 7: 
                                 if(user.getRole().equalsIgnoreCase("Manager")) LoginSystem.registerEmployee(dm); 
