@@ -80,7 +80,6 @@ public class DataManager {
 
     // --- GETTERS ---
     public List<Employee> getEmployees() { return employees; }
-    public List<Product> getProducts() { return products; }
     public List<String> getOutletCodes() { return outletCodes; }
     
     public Product getProductByModel(String model) {
@@ -92,4 +91,19 @@ public class DataManager {
         return (idx != -1) ? outletNames.get(idx) : "Unknown";
     }
     public int getOutletIndex(String code) { return outletCodes.indexOf(code); }
+
+    // FIX 1: The Getter must match the List type
+    public java.util.List<Product> getProducts() {
+        return products;
+    }
+
+    // FIX 2: The missing helper method for Stock Management
+    public Product getProduct(String modelName) {
+        for (Product p : products) {
+            if (p.getModel().equalsIgnoreCase(modelName)) {
+                return p;
+            }
+        }
+        return null;
+    }
 }
