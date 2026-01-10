@@ -3,20 +3,24 @@ import java.util.*;
 
 public class EditInformation {
 
-    public static void editStock(DataManager dm, Scanner input) {
+    public static void editStock(DataManager dm, Employee user) {
+        Scanner input = new Scanner(System.in);
         System.out.println("\n=== Edit Information ===");
+        System.out.println("Logged in as: " + user.getEmployeeName());
         System.out.println("1. Edit Stock Information");
         System.out.println("2. Edit Sales Information");
-        System.out.print("Choose: ");
-        int choice = input.nextInt();
+        System.out.print("Choice: ");
+        
+        int choice = -1;
+        try { choice = input.nextInt(); } catch(Exception e) { }
         input.nextLine(); 
 
         if (choice == 1) {
             modifyStock(dm, input);
         } else if (choice == 2) {
-            modifySalesInTxt(input);
+            modifySales(input);
         } else {
-            System.out.println("Invalid option.");
+            System.out.println("Invalid choice.");
         }
     }
 
@@ -24,91 +28,81 @@ public class EditInformation {
         System.out.print("Enter Model Name: ");
         String modelName = input.nextLine();
         Product product = dm.getProductByModel(modelName);
+
         if (product != null) {
             System.out.print("Enter Outlet Code (e.g., C60): ");
-            String outletCode = input.nextLine().toUpperCase();
-            int currentQty = product.getStockByOutletCode(outletCode, dm);
-            System.out.println("Current Stock at " + dm.getOutletName(outletCode) + ": " + currentQty);
-            System.out.print("Enter New Stock Value: ");
-            int newQty = input.nextInt();
-            input.nextLine(); 
-            product.setStockByOutletCode(outletCode, dm, newQty);
-            dm.saveProducts(); 
-            System.out.println("Stock information updated successfully.");
+            String code = input.nextLine().toUpperCase();
+            int idx = dm.getOutletIndex(code);
+
+            if (idx != -1) {
+                System.out.println("Current Stock at " + dm.getOutletName(code) + ": " + product.getStockByOutletIndex(idx));
+                System.out.print("New Stock Value: ");
+                int newQty = input.nextInt();
+                input.nextLine();
+
+                product.getStockLevels()[idx] = newQty;
+                dm.saveProducts();
+                System.out.println("Stock updated successfully.");
+            } else {
+                System.out.println("Invalid Outlet Code.");
+            }
         } else {
             System.out.println("Model not found.");
         }
     }
 
-    private static void modifySalesInTxt(Scanner input) {
-        System.out.print("Enter Transaction Date (yyyy-MM-dd): ");
+    private static void modifySales(Scanner input) {
+        System.out.print("Enter Date (yyyy-MM-dd): ");
         String date = input.nextLine();
         System.out.print("Enter Customer Name: ");
-        String customerName = input.nextLine();
+        String customer = input.nextLine();
 
         File file = new File("sales/sales_" + date + ".txt");
-
         if (!file.exists()) {
-            System.out.println("No sales record file found for date: " + date);
+            System.out.println("No record file found for that date.");
             return;
         }
 
         List<String> allLines = new ArrayList<>();
         List<String> currentRecord = new ArrayList<>();
-        boolean foundRecord = false;
-        boolean isTargetRecord = false;
+        boolean found = false;
+        boolean target = false;
 
-        try (Scanner fileScanner = new Scanner(file)) {
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
+        try (Scanner fs = new Scanner(file)) {
+            while (fs.hasNextLine()) {
+                String line = fs.nextLine();
                 currentRecord.add(line);
-
-                if (line.contains("Customer Name: " + customerName)) {
-                    isTargetRecord = true;
-                }
-
+                if (line.contains("Customer Name: " + customer)) target = true;
                 if (line.contains("=====================================")) {
-                    if (isTargetRecord && !foundRecord) {
-                        foundRecord = true;
-                        processEdit(currentRecord, input);
+                    if (target && !found) {
+                        found = true;
+                        applyEdit(currentRecord, input);
                     }
                     allLines.addAll(currentRecord);
                     currentRecord.clear();
-                    isTargetRecord = false;
+                    target = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("Error reading file.");
-            return;
-        }
+        } catch (Exception e) { return; }
 
-        if (foundRecord) {
+        if (found) {
             try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
-                for (String line : allLines) {
-                    pw.println(line);
-                }
-                System.out.println("Sales receipt updated successfully.");
-            } catch (IOException e) {
-                System.out.println("Error saving updates to file.");
-            }
+                for (String l : allLines) pw.println(l);
+                System.out.println("Sales receipt updated permanently.");
+            } catch (Exception e) { System.out.println("Error saving file."); }
         } else {
-            System.out.println("Specific transaction for " + customerName + " not found.");
+            System.out.println("Transaction not found.");
         }
     }
 
-    private static void processEdit(List<String> record, Scanner input) {
+    private static void applyEdit(List<String> record, Scanner input) {
         System.out.println("\nSelect number to edit:");
-        System.out.println("1. Customer Name");
-        System.out.println("2. Model (Item)");
-        System.out.println("3. Quantity");
-        System.out.println("4. Transaction Method");
-        System.out.println("5. Total Price");
-        int choice = input.nextInt();
-        input.nextLine();
+        System.out.println("1. Customer Name 2. Model 3. Quantity 4. Method 5. Total Price");
+        int choice = input.nextInt(); input.nextLine();
         System.out.print("Enter New Value: ");
-        String newValue = input.nextLine();
+        String val = input.nextLine();
 
-        String targetPrefix = switch (choice) {
+        String prefix = switch (choice) {
             case 1 -> "Customer Name: ";
             case 2 -> "Item(s): ";
             case 3 -> "Quantity: ";
@@ -118,18 +112,13 @@ public class EditInformation {
         };
 
         for (int i = 0; i < record.size(); i++) {
-            if (record.get(i).startsWith(targetPrefix)) {
-                // Special handling for Model/Quantity if they are on the same line in your TXT format
-                if (choice == 2 || choice == 3) {
-                    // This logic assumes the line format "Item(s): [Name]   Quantity: [Num]"
-                    String currentLine = record.get(i);
-                    if (choice == 2) {
-                        record.set(i, "Item(s): " + newValue + currentLine.substring(currentLine.indexOf("   Quantity:")));
-                    } else {
-                        record.set(i, currentLine.substring(0, currentLine.indexOf("Quantity:")) + "Quantity: " + newValue);
-                    }
+            if (record.get(i).startsWith(prefix)) {
+                if ((choice == 2 || choice == 3) && record.get(i).contains("Quantity:")) {
+                    String line = record.get(i);
+                    if (choice == 2) record.set(i, "Item(s): " + val + line.substring(line.indexOf("   Quantity:")));
+                    else record.set(i, line.substring(0, line.indexOf("Quantity:")) + "Quantity: " + val);
                 } else {
-                    record.set(i, targetPrefix + newValue);
+                    record.set(i, prefix + val);
                 }
                 break;
             }
