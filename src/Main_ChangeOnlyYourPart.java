@@ -56,7 +56,7 @@ public class Main_ChangeOnlyYourPart {
                         System.out.println("2. Stock Management");
                         System.out.println("3. Sales System");
                         System.out.println("4. Search Products");
-                        System.out.println("5. Edit Profile/Product");
+                        System.out.println("5. Edit System");
                         System.out.println("6. Analytics & Performance");
                         System.out.println("7. Register New Employee");
                         System.out.println("8. Logout");
