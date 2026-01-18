@@ -1,0 +1,46 @@
+=== Stock In ===
+Date: 2026-01-18 23:35:49.650389
+By Employee: Tan Guan Han
+Other Party: c61
+- SW2400-1: 1
+--------------------------------
+=== Stock In ===
+Date: 2026-01-18
+Time: 11:40 PM
+From: HQ
+To: C60 (Kuala Lumpur City Centre)
+Models Received:
+- SW2400-1 (Quantity: 1)
+Total Quantity: 1
+Employee: Tan Guan Han
+
+=== Stock In ===
+Date: 2026-01-18
+Time: 11:45 p.m.
+From: c60
+To: c61
+Models Received:
+- SW2400-1 (Quantity: 1)
+Total Quantity: 1
+Employee in Charge: Tan Guan Han
+
+=== Stock In ===
+Date: 2026-01-18
+Time: 11:55 p.m.
+From: C60
+To: C61
+Models Received:
+- SW2400-1 (Quantity: 100)
+Total Quantity: 100
+Employee in Charge: Tan Guan Han
+
+=== Stock In ===
+Date: 2026-01-18
+Time: 11:58 p.m.
+From: HQ
+To: C60
+Models Received:
+- SW2400-1 (Quantity: 1000)
+Total Quantity: 1000
+Employee in Charge: Tan Guan Han
+
