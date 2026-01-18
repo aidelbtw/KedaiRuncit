@@ -78,7 +78,7 @@ public class EditSystem {
             while (fs.hasNextLine()) {
                 String line = fs.nextLine();
                 currentRecord.add(line);
-                if (line.contains("Customer: " + customer)) target = true; // Fixed to match Receipt format
+                if (line.contains("Customer: " + customer)) target = true;
                 if (line.contains("=========================================")) {
                     if (target && !found) {
                         found = true;
@@ -89,7 +89,7 @@ public class EditSystem {
                     target = false;
                 }
             }
-            // Add remaining lines if file doesn't end with separator
+           
             if(!currentRecord.isEmpty()) allLines.addAll(currentRecord);
             
         } catch (Exception e) { return; }
@@ -114,7 +114,7 @@ public class EditSystem {
         String prefix;
         switch (choice) {
             case 1: prefix = "Customer: "; break;
-            case 2: prefix = "Model"; break; // Handling complex lines
+            case 2: prefix = "Model"; break; 
             case 3: prefix = "Qty"; break;
             case 4: prefix = "Payment Method:"; break;
             case 5: prefix = "Total Amount:"; break;
