@@ -8,12 +8,9 @@ import javax.activation.*;
 public class EmailService {
 
     // =================================================================
-    // CONFIGURATION (USE YOUR PERSONAL GMAIL HERE, NOT STUDENT EMAIL)
+    // CONFIGURATION
     // =================================================================
-    // 1. Your Personal Gmail Address (The SENDER)
     private static final String SENDER_EMAIL = "haqimnazry@gmail.com"; 
-    
-    // 2. The 16-Letter App Password you just generated
     private static final String APP_PASSWORD = "xgvg vvyb ghzv wxda"; 
     // =================================================================
 
@@ -30,8 +27,12 @@ public class EmailService {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 3 && parts[0].equals(today.toString())) {
-                    totalSales += Double.parseDouble(parts[2]);
+                
+                // === FIX IS HERE ===
+                // 1. Check length >= 4 (because we need index 3)
+                // 2. Read parts[3] (Price) instead of parts[2] (Quantity)
+                if (parts.length >= 4 && parts[0].equals(today.toString())) {
+                    totalSales += Double.parseDouble(parts[3]); 
                     transactionCount++;
                 }
             }
@@ -61,7 +62,7 @@ public class EmailService {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.ssl.protocols", "TLSv1.2"); // Mandatory for 2025
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -97,7 +98,6 @@ public class EmailService {
 
         } catch (AuthenticationFailedException e) {
             System.out.println(">> LOGIN FAILED: Check your App Password in EmailService.java");
-            System.out.println("   (Do not use your student email as the SENDER)");
         } catch (MessagingException e) {
             e.printStackTrace();
         }

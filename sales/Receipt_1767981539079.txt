@@ -1,0 +1,8 @@
+=== RECEIPT ===
+Date: 2026-01-10
+Outlet: C60
+Customer: Ali
+- DW2300-1:2:798.0
+Total: RM798.0
+Staff: Tan Guan Han
+Method: Cash

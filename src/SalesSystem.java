@@ -18,10 +18,8 @@ public class SalesSystem {
         System.out.println("Date: " + date);
         System.out.println("Time: " + timeStr);
 
-        // === CHANGE: Ask for Outlet Code Manually ===
         System.out.print("Enter Outlet Code (e.g., C60): ");
         String outletCode = input.nextLine().trim();
-        // ============================================
 
         System.out.print("Customer Name: ");
         String customerName = input.nextLine();
@@ -30,7 +28,6 @@ public class SalesSystem {
         List<Integer> soldQuantities = new ArrayList<>();
         double subtotal = 0.0;
 
-        // Item Selection Loop
         System.out.println("Item(s) Purchased:");
         boolean addingItems = true;
 
@@ -53,7 +50,6 @@ public class SalesSystem {
                 continue;
             }
 
-            // Check Stock at the SPECIFIC OUTLET entered above
             int currentStock = p.getStockByOutletCode(outletCode, dm);
             
             if (qty > currentStock) {
@@ -61,7 +57,6 @@ public class SalesSystem {
                 continue;
             }
 
-            // Add to cart
             soldProducts.add(p);
             soldQuantities.add(qty);
             
@@ -81,7 +76,6 @@ public class SalesSystem {
             return;
         }
 
-        // Finalize
         System.out.print("Enter transaction method: ");
         String method = input.nextLine();
 
@@ -93,17 +87,17 @@ public class SalesSystem {
             int qty = soldQuantities.get(i);
             int currentStock = p.getStockByOutletCode(outletCode, dm);
             
-            // Deduct stock from the manually entered outlet
             p.setStockByOutletCode(outletCode, dm, currentStock - qty);
         }
         
         dm.saveProducts(); 
         System.out.println("Transaction successful.");
-        System.out.println("Sale recorded successfully.");
-        System.out.println("Model quantities updated successfully.");
 
-        // Generate Receipt
+        // Generate Text Receipt
         saveReceipt(date, timeStr, customerName, outletCode, user.getName(), method, subtotal, soldProducts, soldQuantities);
+
+        // === NEW: Save to Data Analytics History (CSV) ===
+        saveToHistory(date, soldProducts, soldQuantities);
     }
 
     private static void saveReceipt(LocalDate date, String time, String customer, String outlet, String empName, String method, double total, List<Product> items, List<Integer> qtys) {
@@ -116,7 +110,7 @@ public class SalesSystem {
             pw.println("             OFFICIAL RECEIPT            ");
             pw.println("=========================================");
             pw.println("Date: " + date + "  Time: " + time);
-            pw.println("Outlet: " + outlet);  // Shows the manually entered outlet
+            pw.println("Outlet: " + outlet);
             pw.println("Served By: " + empName);
             pw.println("Customer: " + customer);
             pw.println("-----------------------------------------");
@@ -138,6 +132,23 @@ public class SalesSystem {
 
         } catch (IOException e) {
             System.out.println("Error saving receipt: " + e.getMessage());
+        }
+    }
+
+    // === NEW METHOD FOR ANALYTICS ===
+    private static void saveToHistory(LocalDate date, List<Product> items, List<Integer> qtys) {
+        // Format: Date, Model, Quantity, TotalPriceForThisItem
+        try (FileWriter fw = new FileWriter("../data/sales_history.csv", true);
+             PrintWriter pw = new PrintWriter(fw)) {
+            
+            for(int i = 0; i < items.size(); i++) {
+                Product p = items.get(i);
+                int qty = qtys.get(i);
+                double total = p.getPrice() * qty;
+                pw.println(date + "," + p.getModel() + "," + qty + "," + total);
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating sales history.");
         }
     }
 }

@@ -1,155 +1,117 @@
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AnalyticsSystem {
     
-    private static List<String[]> loadSalesLog() {
-        List<String[]> logs = new ArrayList<>();
-        // PATH: ../data/sales_history.csv
-        try (BufferedReader br = new BufferedReader(new FileReader("../data/sales_history.csv"))) {
+    // Helper class to store row data
+    private static class SalesRecord {
+        String date;
+        String model;
+        int qty;
+        double revenue;
+
+        public SalesRecord(String date, String model, int qty, double revenue) {
+            this.date = date;
+            this.model = model;
+            this.qty = qty;
+            this.revenue = revenue;
+        }
+    }
+
+    private static List<SalesRecord> loadSalesHistory() {
+        List<SalesRecord> records = new ArrayList<>();
+        File file = new File("../data/sales_history.csv");
+        
+        if (!file.exists()) return records; // Return empty list if no file
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                logs.add(line.split(","));
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    String date = parts[0];
+                    String model = parts[1];
+                    int qty = Integer.parseInt(parts[2]);
+                    double revenue = Double.parseDouble(parts[3]);
+                    records.add(new SalesRecord(date, model, qty, revenue));
+                }
             }
-        } catch (IOException e) { System.out.println("No sales history found."); }
-        return logs;
+        } catch (Exception e) { 
+            System.out.println("Error reading sales history."); 
+        }
+        return records;
     }
 
     public static void showMenu() {
         Scanner input = new Scanner(System.in);
-        List<String[]> data = loadSalesLog();
-        if(data.isEmpty()) {
-            System.out.println("No sales data available.");
-            return;
-        }
-
+        
         while(true) {
-            System.out.println("\n=== EXTRA FEATURES: Analytics ===");
-            System.out.println("1. Total Revenue");
-            System.out.println("2. Filter Sales > RM1000");
-            System.out.println("3. Employee Performance");
-            System.out.println("4. Filter and Sort Sales History");
-            System.out.println("5. Back");
-            System.out.print("Choice: ");
-            int ch = input.nextInt(); input.nextLine();
+            List<SalesRecord> data = loadSalesHistory();
 
-            switch(ch) {
+            System.out.println("\n=== SALES ANALYTICS ===");
+            if(data.isEmpty()) {
+                System.out.println("[!] No sales history found yet.");
+                System.out.println("    (Make a sale in Sales System first)");
+            }
+            
+            System.out.println("1. Total Revenue");
+            System.out.println("2. Most Sold Product Model");
+            System.out.println("3. Average Daily Revenue");
+            System.out.println("4. Back");
+            System.out.print("Choice: ");
+            
+            int choice = -1;
+            try {
+                choice = Integer.parseInt(input.nextLine());
+            } catch (NumberFormatException e) {}
+
+            if (choice == 4) return;
+
+            if (data.isEmpty()) continue; // Skip logic if no data
+
+            switch(choice) {
                 case 1:
-                    double total = 0;
-                    for(String[] row : data) total += Double.parseDouble(row[2]);
-                    System.out.println("Total Revenue: RM" + String.format("%.2f", total));
-                    break; 
+                    double totalRev = 0;
+                    for(SalesRecord r : data) totalRev += r.revenue;
+                    System.out.printf("\n>> TOTAL REVENUE: RM %.2f\n", totalRev);
+                    break;
+
                 case 2:
-                    System.out.println("--- High Value Transactions ---");
-                    for(String[] row : data) {
-                        if(Double.parseDouble(row[2]) > 1000) {
-                            System.out.println("Date: " + row[0] + " | Amount: RM" + row[2]);
+                    Map<String, Integer> counts = new HashMap<>();
+                    for(SalesRecord r : data) {
+                        counts.put(r.model, counts.getOrDefault(r.model, 0) + r.qty);
+                    }
+                    
+                    String bestModel = "None";
+                    int maxQty = 0;
+                    
+                    for(Map.Entry<String, Integer> entry : counts.entrySet()) {
+                        if(entry.getValue() > maxQty) {
+                            maxQty = entry.getValue();
+                            bestModel = entry.getKey();
                         }
                     }
+                    System.out.println("\n>> MOST SOLD MODEL: " + bestModel + " (" + maxQty + " units)");
                     break;
+
                 case 3:
-                    System.out.println("--- Sales by Employee ---");
-                    Map<String, Double> performance = new HashMap<>();
-                    for(String[] row : data) {
-                        String empID = row[3];
-                        double amt = Double.parseDouble(row[2]);
-                        performance.put(empID, performance.getOrDefault(empID, 0.0) + amt);
+                    // Group revenue by date
+                    Map<String, Double> dailyRev = new HashMap<>();
+                    for(SalesRecord r : data) {
+                        dailyRev.put(r.date, dailyRev.getOrDefault(r.date, 0.0) + r.revenue);
                     }
-                    for(String id : performance.keySet()) {
-                        System.out.println("Staff " + id + ": RM" + String.format("%.2f", performance.get(id)));
-                    }
+                    
+                    double totalDaily = 0;
+                    for(double d : dailyRev.values()) totalDaily += d;
+                    
+                    double avg = dailyRev.isEmpty() ? 0 : totalDaily / dailyRev.size();
+                    
+                    System.out.printf("\n>> AVERAGE DAILY REVENUE: RM %.2f (over %d active days)\n", avg, dailyRev.size());
                     break;
-                case 4:
-                    filterAndSortSalesHistory(data);
-                    break;
+                    
                 default:
-                    return;
+                    System.out.println("Invalid choice.");
             }
-        }
-    }
-
-    private static void filterAndSortSalesHistory(List<String[]> data) {
-        Scanner input = new Scanner(System.in);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        // Filter by date range
-        System.out.print("Enter start date (yyyy-MM-dd): ");
-        String startDateStr = input.nextLine();
-        System.out.print("Enter end date (yyyy-MM-dd): ");
-        String endDateStr = input.nextLine();
-
-        LocalDate startDate, endDate;
-        try {
-            startDate = LocalDate.parse(startDateStr, formatter);
-            endDate = LocalDate.parse(endDateStr, formatter);
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format. Please use yyyy-MM-dd.");
-            return;
-        }
-
-        List<String[]> filteredData = data.stream()
-            .filter(row -> {
-                LocalDate saleDate = LocalDate.parse(row[0], formatter);
-                return !saleDate.isBefore(startDate) && !saleDate.isAfter(endDate);
-            })
-            .collect(Collectors.toList());
-
-        if(filteredData.isEmpty()) {
-            System.out.println("No sales data found within the specified date range.");
-            return;
-        }
-
-        // Display cumulative sales
-        double cumulativeSales = filteredData.stream()
-            .mapToDouble(row -> Double.parseDouble(row[2]))
-            .sum();
-        System.out.println("Cumulative Sales for " + startDateStr + " to " + endDateStr + ": RM" + String.format("%.2f", cumulativeSales));
-
-        // Sorting options
-        System.out.println("\nChoose sorting criteria:");
-        System.out.println("1. Date (Ascending)");
-        System.out.println("2. Date (Descending)");
-        System.out.println("3. Amount (Lowest to Highest)");
-        System.out.println("4. Amount (Highest to Lowest)");
-        System.out.println("5. Customer Name (Alphabetically)");
-        System.out.print("Choice: ");
-        int sortChoice = input.nextInt(); input.nextLine();
-
-        Comparator<String[]> comparator = null;
-        switch(sortChoice) {
-            case 1:
-                comparator = Comparator.comparing(row -> LocalDate.parse(row[0], formatter));
-                break;
-            case 2:
-                comparator = Comparator.comparing(row -> LocalDate.parse(row[0], formatter)).reversed();
-                break;
-            case 3:
-                comparator = Comparator.comparingDouble(row -> Double.parseDouble(row[2]));
-                break;
-            case 4:
-                comparator = Comparator.comparingDouble(row -> Double.parseDouble(row[2])).reversed();
-                break;
-            case 5:
-                comparator = Comparator.comparing(row -> row[1]);
-                break;
-            default:
-                System.out.println("Invalid choice. No sorting applied.");
-                return;
-        }
-
-        List<String[]> sortedData = filteredData.stream()
-            .sorted(comparator)
-            .collect(Collectors.toList());
-
-        // Tabular display
-        System.out.println("\nFiltered and Sorted Sales Records:");
-        System.out.printf("%-15s %-20s %-10s %-15s %-10s\n", "Date", "Customer", "Amount", "Employee ID", "Outlet");
-        for(String[] row : sortedData) {
-            System.out.printf("%-15s %-20s RM%-9.2f %-15s %-10s\n", row[0], row[1], Double.parseDouble(row[2]), row[3], row[4]);
         }
     }
 }

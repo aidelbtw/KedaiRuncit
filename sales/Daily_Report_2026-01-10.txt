@@ -1,0 +1,5 @@
+=== DAILY SALES REPORT ===
+Date: 2026-01-10
+Transactions: 1
+Total Sales: RM798.00
+---------------------------
