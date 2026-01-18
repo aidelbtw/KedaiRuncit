@@ -40,7 +40,6 @@ public class EditSystem {
                 int newQty = input.nextInt();
                 input.nextLine();
 
-                // This line now works because we fixed Product.java
                 product.getStockLevels()[idx] = newQty;
                 
                 dm.saveProducts();
