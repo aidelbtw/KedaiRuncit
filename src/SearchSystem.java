@@ -3,7 +3,6 @@ import java.util.*;
 
 public class SearchSystem {
 
-    // === CHANGED NAME FROM searchModel TO search ===
     public static void search(DataManager dm) {
         Scanner input = new Scanner(System.in);
         System.out.println("\n=== Search Information ===");
@@ -28,7 +27,6 @@ public class SearchSystem {
         System.out.print("Search Model Name: ");
         String modelName = input.nextLine();
         
-        // Ensure getProductByModel exists in DataManager or use getProduct
         Product product = dm.getProduct(modelName); 
         
         if (product == null) {
