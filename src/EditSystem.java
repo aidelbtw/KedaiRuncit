@@ -106,7 +106,7 @@ public class EditSystem {
 
     private static void applyEdit(List<String> record, Scanner input) {
         System.out.println("\nSelect number to edit:");
-        System.out.println("1. Customer Name 2. Model 3. Quantity 4. Method 5. Total Price");
+        System.out.println("1. Customer Name 2. Model 3. Quantity 4. Payment Method 5. Total Price");
         int choice = input.nextInt(); input.nextLine();
         System.out.print("Enter New Value: ");
         String val = input.nextLine();
