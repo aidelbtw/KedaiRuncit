@@ -33,3 +33,7 @@ Be sure to have installed git on your device for using github, and use your comm
 - go to github page
 - click "compare & pull request"
 - "create pull request", then let me know u made a request.
+
+4.HOW TO COMPILE WITH EMAIL SERVICE
+-"javac -cp ".;../lib/javax.mail.jar;../lib/activation.jar" *.java"
+-"java -cp ".;../lib/javax.mail.jar;../lib/activation.jar" Main_ChangeOnlyYourPart"
