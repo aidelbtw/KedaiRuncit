@@ -3,7 +3,6 @@ import java.util.*;
 
 public class EditSystem {
 
-    // === CHANGED NAME FROM editStock TO edit ===
     public static void edit(DataManager dm, Employee user) {
         Scanner input = new Scanner(System.in);
         System.out.println("\n=== Edit Information ===");
@@ -123,7 +122,6 @@ public class EditSystem {
             default: prefix = "";
         }
 
-        // Logic simplified for assignment purposes
         for (int i = 0; i < record.size(); i++) {
             if (record.get(i).contains(prefix)) {
                 if(choice == 1 || choice == 4 || choice == 5) {
