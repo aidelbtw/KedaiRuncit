@@ -4,7 +4,6 @@ import java.time.format.DateTimeFormatter;
 public class Attendance {
 
     private LocalDateTime clockInTime;
-    // Removed 'private DataManager dm' to avoid NullPointer issues
 
     public boolean hasClockedIn() {
         return clockInTime != null;
@@ -14,7 +13,6 @@ public class Attendance {
         return t.format(DateTimeFormatter.ofPattern("hh:mm a"));
     }
 
-    // === FIXED: Added DataManager parameter here ===
     public void clockIn(Employee staff, DataManager dm) {
 
         if (hasClockedIn()) {
@@ -26,7 +24,6 @@ public class Attendance {
         LocalDate today = LocalDate.now();
 
         String outletCode = staff.getOutlet();
-        // Now it uses the 'dm' passed from Main
         String outletName = (dm != null) ? dm.getOutletName(outletCode) : "HQ"; 
 
         System.out.println("\n=== Attendance Clock In ===");
@@ -38,7 +35,6 @@ public class Attendance {
         System.out.println("Time: " + formatTime(clockInTime));
     }
 
-    // === FIXED: Added DataManager parameter here ===
     public void clockOut(Employee staff, DataManager dm) {
 
         if (!hasClockedIn()) {
@@ -63,7 +59,7 @@ public class Attendance {
         System.out.println("Date: " + today);
         System.out.println("Time: " + formatTime(clockOutTime));
 
-        // === CHANGE: Logic to show minutes if duration is short ===
+        //to show minutes if duration is short
         if (minutes == 0) {
             System.out.println("Total Duration: Less than 1 minute");
         } else if (minutes < 60) {
@@ -71,7 +67,6 @@ public class Attendance {
         } else {
             System.out.printf("Total Hours Worked: %.1f hours%n", hours);
         }
-        // ==========================================================
 
         clockInTime = null;
     }

@@ -12,22 +12,18 @@ public class SalesSystem {
         System.out.println("\n=== Record New Sale ===");
         
         LocalDate date = LocalDate.now();
-        // === FIX START: Create User-Friendly Date String ===
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String formattedDate = date.format(formatter); 
-        // === FIX END ===
 
         LocalTime time = LocalTime.now();
         String timeStr = time.format(DateTimeFormatter.ofPattern("hh:mm a"));
         
-        System.out.println("Date: " + formattedDate); // Display friendly date
+        System.out.println("Date: " + formattedDate); 
         System.out.println("Time: " + timeStr);
 
-        // Auto-detect Outlet
         String outletCode = user.getOutlet();
         System.out.println("Session Outlet: " + outletCode);
 
-        // Security: HQ usually cannot sell retail items
         if (outletCode.equalsIgnoreCase("HQ")) {
             System.out.println(">> ERROR: HQ cannot perform retail sales transactions.");
             return;
@@ -105,15 +101,14 @@ public class SalesSystem {
         dm.saveProducts(); 
         System.out.println("Transaction successful.");
 
-        // Generate Text Receipt (Pass formattedDate for display)
         saveReceipt(date, formattedDate, timeStr, customerName, outletCode, user.getName(), method, subtotal, soldProducts, soldQuantities);
 
-        // Save to History (Keep raw date object for sorting)
-        saveToHistory(date, soldProducts, soldQuantities);
+        // --- UPDATED CALL: Now passing customerName as well ---
+        saveToHistory(date, user.getName(), customerName, soldProducts, soldQuantities);
     }
 
     private static void saveReceipt(LocalDate rawDate, String displayDate, String time, String customer, String outlet, String empName, String method, double total, List<Product> items, List<Integer> qtys) {
-        // Keep filename as yyyy-mm-dd (rawDate) so files sort correctly in folders
+        
         String filename = "../sales/sales_" + rawDate + ".txt";
         
         try (FileWriter fw = new FileWriter(filename, true);
@@ -122,7 +117,7 @@ public class SalesSystem {
             pw.println("=========================================");
             pw.println("            OFFICIAL RECEIPT             ");
             pw.println("=========================================");
-            pw.println("Date: " + displayDate + "  Time: " + time); // Use friendly date here
+            pw.println("Date: " + displayDate + "  Time: " + time); 
             pw.println("Outlet: " + outlet);
             pw.println("Served By: " + empName);
             pw.println("Customer: " + customer);
@@ -148,8 +143,8 @@ public class SalesSystem {
         }
     }
 
-    private static void saveToHistory(LocalDate date, List<Product> items, List<Integer> qtys) {
-        // Always use raw 'date' (yyyy-mm-dd) here for Excel sorting compatibility
+    //save employees and cust name
+    private static void saveToHistory(LocalDate date, String empName, String custName, List<Product> items, List<Integer> qtys) {
         try (FileWriter fw = new FileWriter("../data/sales_history.csv", true);
              PrintWriter pw = new PrintWriter(fw)) {
             
@@ -157,7 +152,7 @@ public class SalesSystem {
                 Product p = items.get(i);
                 int qty = qtys.get(i);
                 double total = p.getPrice() * qty;
-                pw.println(date + "," + p.getModel() + "," + qty + "," + total);
+                pw.println(date + "," + empName + "," + custName + "," + p.getModel() + "," + qty + "," + total);
             }
         } catch (IOException e) {
             System.out.println("Error updating sales history.");

@@ -4,19 +4,15 @@ public class Main_ChangeOnlyYourPart {
     public static void main(String[] args) {
         DataManager dm = new DataManager();
         
-        // PATHS: Go UP one level from 'src' to find 'data'
+        //find data up one level
         dm.loadEmployees("../data/employee.csv");
         dm.loadOutlets("../data/outlet.csv");
         dm.loadProducts("../data/model.csv");
 
         Scanner input = new Scanner(System.in);
         
-        // Debug check to help you avoid "File Not Found" errors
         if (dm.getEmployees().size() == 0) {
             System.out.println("ERROR: No data loaded.");
-            System.out.println("Please ensure your folder structure is correct:");
-            System.out.println("KedaiRuncit/data/   (contains CSV files)");
-            System.out.println("KedaiRuncit/src/    (contains Java files)");
             return;
         }
 
@@ -31,16 +27,11 @@ public class Main_ChangeOnlyYourPart {
             
             if(ch == 2) {
                 System.out.println("Initiating Shutdown Sequence...");
-                
-                // === FIX START: Ask for email so we can pass it to the service ===
-                input.nextLine(); // Clear the buffer after nextInt()
+                input.nextLine(); // Clear buffer
                 System.out.print("Enter Recipient Email: ");
                 String email = input.nextLine();
                 
-                // Now passing BOTH DataManager and the email string
                 EmailService.sendDailyReport(dm, email); 
-                // === FIX END ===
-                
                 System.out.println("System Closed. Goodbye.");
                 break;
             }
@@ -48,7 +39,6 @@ public class Main_ChangeOnlyYourPart {
             if(ch == 1) {
                 Employee user = LoginSystem.login(dm.getEmployees());
                 if(user != null) {
-                    // user.getAttendance().setDataManager(dm); // Ensure Attendance has this method if you use it
                     boolean loggedIn = true;
                     while(loggedIn) {
                         System.out.println("\n--- Dashboard: " + user.getEmployeeName() + " ---");
@@ -66,16 +56,19 @@ public class Main_ChangeOnlyYourPart {
                         try { action = input.nextInt(); } catch(Exception e) { input.nextLine(); }
 
                         switch(action) {
-                        case 1: 
-                            // Pass 'dm' into clockIn and clockOut
-                            if(!user.getAttendance().hasClockedIn()) user.getAttendance().clockIn(user, dm);
-                            else user.getAttendance().clockOut(user, dm);
-                            break;
+                            case 1: 
+                                if(!user.getAttendance().hasClockedIn()) user.getAttendance().clockIn(user, dm);
+                                else user.getAttendance().clockOut(user, dm);
+                                break;
                             case 2: StockManagement.manage(dm, user); break;
                             case 3: SalesSystem.sell(dm, user); break;
                             case 4: SearchSystem.search(dm); break;
                             case 5: EditSystem.edit(dm, user); break;
-                            case 6: AnalyticsSystem.showMenu(); break;
+                            
+                            case 6: 
+                                AnalyticsSystem.showMenu(user); 
+                                break;
+                            
                             case 7: 
                                 if(user.getRole().equalsIgnoreCase("Manager")) LoginSystem.registerEmployee(dm); 
                                 else System.out.println("Managers only.");

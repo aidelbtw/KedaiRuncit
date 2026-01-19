@@ -14,11 +14,9 @@ public class Product {
 
     public void setPrice(double price) { this.price = price; }
 
-    // === ADDED THIS METHOD TO FIX THE ERROR ===
     public int[] getStockLevels() {
         return stockLevels;
     }
-    // ==========================================
 
     public int getStockByOutletCode(String outletCode, DataManager dm) {
         int index = dm.getOutletIndex(outletCode);

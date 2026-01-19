@@ -7,7 +7,7 @@ public class DataManager {
     private List<String> outletNames = new ArrayList<>();
     private List<Product> products = new ArrayList<>();
 
-    // --- LOADERS ---
+    //loaders
     public void loadEmployees(String filename) {
         employees.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -53,7 +53,7 @@ public class DataManager {
         } catch (IOException e) { System.out.println("Error loading products: " + e.getMessage()); }
     }
 
-    // --- SAVERS (Look UP one level with ../) ---
+    //savers
     public void saveProducts() {
         try (PrintWriter pw = new PrintWriter(new FileWriter("../data/model.csv"))) {
             pw.println("\uFEFFModel,Price,C60,C61,C62,C63,C64,C65,C66,C67,C68,C69");
@@ -78,7 +78,7 @@ public class DataManager {
         } catch (IOException e) { System.out.println("Error saving employees."); }
     }
 
-    // --- GETTERS ---
+    //getters
     public List<Employee> getEmployees() { return employees; }
     public List<String> getOutletCodes() { return outletCodes; }
     
@@ -92,12 +92,11 @@ public class DataManager {
     }
     public int getOutletIndex(String code) { return outletCodes.indexOf(code); }
 
-    // FIX 1: The Getter must match the List type
     public java.util.List<Product> getProducts() {
         return products;
     }
 
-    // FIX 2: The missing helper method for Stock Management
+    //for stock management
     public Product getProduct(String modelName) {
         for (Product p : products) {
             if (p.getModel().equalsIgnoreCase(modelName)) {

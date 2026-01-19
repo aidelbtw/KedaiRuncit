@@ -1,5 +1,5 @@
 === DAILY SALES REPORT ===
 Date: 2026-01-19
-Transactions: 0
-Total Sales: RM0.00
+Transactions: 6
+Total Sales: RM7999.00
 ---------------------------

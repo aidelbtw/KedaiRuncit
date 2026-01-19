@@ -7,7 +7,7 @@ import javax.activation.*;
 
 public class EmailService {
 
-    // CONFIGURATION
+    //config
     private static final String SENDER_EMAIL = "haqimnazry@gmail.com"; 
     private static final String APP_PASSWORD = "xgvg vvyb ghzv wxda"; 
 
@@ -19,22 +19,31 @@ public class EmailService {
         double totalSales = 0.0;
         int transactionCount = 0;
 
-        // Calculate totals
+        // calculate totals
         try (BufferedReader br = new BufferedReader(new FileReader("../data/sales_history.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 
-                // 1. Check length >= 4 (because we need index 3)
-                // 2. Read parts[3] (Price) instead of parts[2] (Quantity)
-                if (parts.length >= 4 && parts[0].equals(today.toString())) {
-                    totalSales += Double.parseDouble(parts[3]); 
-                    transactionCount++;
+                if (parts.length > 0 && parts[0].equals(today.toString())) {
+                    try {
+                        if (parts.length >= 6) {
+                            totalSales += Double.parseDouble(parts[5]); 
+                            transactionCount++;
+                        } 
+                        // total is at index 3
+                        else if (parts.length == 4) {
+                            totalSales += Double.parseDouble(parts[3]); 
+                            transactionCount++;
+                        }
+                    } catch (NumberFormatException e) {
+                        //skip if unreadable
+                    }
                 }
             }
         } catch (IOException e) {}
 
-        // Write file
+        // write file
         try (PrintWriter pw = new PrintWriter(new FileWriter(reportFile))) {
             pw.println("=== DAILY SALES REPORT ===");
             pw.println("Date: " + today);
@@ -52,7 +61,7 @@ public class EmailService {
         File attachment = generateDailyAttachment(dm);
         if (attachment == null) return;
 
-        // Gmail SMTP Settings
+        //gmail smtp settings
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");

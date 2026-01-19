@@ -3,7 +3,6 @@ import java.util.*;
 
 public class EditSystem {
 
-    // === CHANGED NAME FROM editStock TO edit ===
     public static void edit(DataManager dm, Employee user) {
         Scanner input = new Scanner(System.in);
         System.out.println("\n=== Edit Information ===");
@@ -41,7 +40,6 @@ public class EditSystem {
                 int newQty = input.nextInt();
                 input.nextLine();
 
-                // This line now works because we fixed Product.java
                 product.getStockLevels()[idx] = newQty;
                 
                 dm.saveProducts();
@@ -60,9 +58,8 @@ public class EditSystem {
         System.out.print("Enter Customer Name: ");
         String customer = input.nextLine();
 
-        File file = new File("../sales/sales_" + date + ".txt"); // Added ../sales/ path just in case
+        File file = new File("../sales/sales_" + date + ".txt"); 
         if (!file.exists()) {
-             // Try local folder if ../ fails
              file = new File("sales/sales_" + date + ".txt");
         }
         
@@ -80,7 +77,7 @@ public class EditSystem {
             while (fs.hasNextLine()) {
                 String line = fs.nextLine();
                 currentRecord.add(line);
-                if (line.contains("Customer: " + customer)) target = true; // Fixed to match Receipt format
+                if (line.contains("Customer: " + customer)) target = true;
                 if (line.contains("=========================================")) {
                     if (target && !found) {
                         found = true;
@@ -91,7 +88,6 @@ public class EditSystem {
                     target = false;
                 }
             }
-            // Add remaining lines if file doesn't end with separator
             if(!currentRecord.isEmpty()) allLines.addAll(currentRecord);
             
         } catch (Exception e) { return; }
@@ -116,14 +112,13 @@ public class EditSystem {
         String prefix;
         switch (choice) {
             case 1: prefix = "Customer: "; break;
-            case 2: prefix = "Model"; break; // Handling complex lines
+            case 2: prefix = "Model"; break; 
             case 3: prefix = "Qty"; break;
             case 4: prefix = "Payment Method:"; break;
             case 5: prefix = "Total Amount:"; break;
             default: prefix = "";
         }
 
-        // Logic simplified for assignment purposes
         for (int i = 0; i < record.size(); i++) {
             if (record.get(i).contains(prefix)) {
                 if(choice == 1 || choice == 4 || choice == 5) {

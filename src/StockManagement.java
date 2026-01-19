@@ -8,7 +8,7 @@ public class StockManagement {
 
     private static Scanner input = new Scanner(System.in);
 
-    // WHITELIST: The exact names of your outlets/columns in CSV
+
     private static final List<String> VALID_OUTLETS = Arrays.asList(
         "C60", "C61", "C62", "C63", "C64", "C65", "C66", "C67", "C68", "C69", "HQ"
     );
@@ -29,8 +29,8 @@ public class StockManagement {
 
             switch (choice) {
                 case 1: performStockCount(dm, emp); break; 
-                case 2: handleStockMovement(dm, emp, true); break;  // Stock In
-                case 3: handleStockMovement(dm, emp, false); break; // Stock Out
+                case 2: handleStockMovement(dm, emp, true); break;  
+                case 3: handleStockMovement(dm, emp, false); break; 
                 case 4: return;
             }
         }
@@ -72,20 +72,20 @@ public class StockManagement {
         String currentOutlet = emp.getOutlet(); 
 
         if (isStockIn) {
-            // WE are receiving stock. Destination is US.
+   
             toLocation = currentOutlet;
             System.out.println("Receiving Stock INTO: " + toLocation);
             
-            // Only ask where it came from
+   
             fromLocation = getValidOutletInput("Source (From Outlet/HQ): ");
             if (fromLocation == null) return;
 
         } else {
-            // WE are sending stock. Source is US.
+          
             fromLocation = currentOutlet;
             System.out.println("Sending Stock FROM: " + fromLocation);
             
-            // Only ask where it is going
+        
             toLocation = getValidOutletInput("Destination (To Outlet/HQ): ");
             if (toLocation == null) return;
             
@@ -94,7 +94,7 @@ public class StockManagement {
             }
         }
 
-        // 2. SELECT ITEMS & VALIDATE SOURCE STOCK
+        
         List<Product> selectedProducts = new ArrayList<>();
         List<Integer> selectedQuantities = new ArrayList<>();
         int totalQty = 0;
@@ -115,7 +115,7 @@ public class StockManagement {
                 System.out.println("Invalid number."); continue;
             }
 
-            // CHECK SOURCE STOCK
+            
             if (!fromLocation.equalsIgnoreCase("HQ")) {
                 int stockAtSource = p.getStockByOutletCode(fromLocation, dm);
                 if (qty > stockAtSource) {
@@ -132,7 +132,7 @@ public class StockManagement {
 
         if(totalQty == 0) return;
 
-        // 3. UPDATE DATABASE
+       
         for(int i = 0; i < selectedProducts.size(); i++) {
             Product p = selectedProducts.get(i);
             int qty = selectedQuantities.get(i);
@@ -149,19 +149,19 @@ public class StockManagement {
         }
         dm.saveProducts();
 
-        // 4. GENERATE RECEIPT
+      
         LocalDate date = LocalDate.now();
         
-        // === FIX START: Friendly Date ===
+        
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        // === FIX END ===
+        
 
         String timeStr = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"))
                           .toLowerCase().replace("am", "a.m.").replace("pm", "p.m.");
 
         StringBuilder receiptContent = new StringBuilder();
         receiptContent.append(typeHeader).append("\n");
-        receiptContent.append("Date: ").append(formattedDate).append("\n"); // Use Friendly Date
+        receiptContent.append("Date: ").append(formattedDate).append("\n"); 
         receiptContent.append("Time: ").append(timeStr).append("\n");
         receiptContent.append("From: ").append(fromLocation).append("\n");
         receiptContent.append("To: ").append(toLocation).append("\n");
@@ -175,7 +175,7 @@ public class StockManagement {
         receiptContent.append("Employee in Charge: ").append(emp.getName()).append("\n"); 
         receiptContent.append("\n"); 
 
-        // Keep Filename as yyyy-mm-dd
+        
         String filename = "../sales/receipts_" + date + ".txt";
         try (FileWriter fw = new FileWriter(filename, true);
              PrintWriter pw = new PrintWriter(fw)) {

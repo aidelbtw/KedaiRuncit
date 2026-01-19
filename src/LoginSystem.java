@@ -2,7 +2,7 @@ import java.util.*;
 
 public class LoginSystem {
     
-    // Hardcoded list of valid shops to prevent typos
+    //list of valid outlet
     private static final List<String> VALID_OUTLETS = Arrays.asList(
         "C60", "C61", "C62", "C63", "C64", "C65", "C66", "C67", "C68", "C69", "HQ"
     );
@@ -18,7 +18,6 @@ public class LoginSystem {
             if(e.getEmployeeID().equalsIgnoreCase(id) && e.getPassword().equals(pass)){
                 System.out.println(">> Password Accepted.");
 
-                // === NEW FEATURE: SESSION OUTLET SELECTION ===
                 while (true) {
                     System.out.println("\nWhere are you working today?");
                     System.out.println("Valid Outlets: " + VALID_OUTLETS);
@@ -36,7 +35,6 @@ public class LoginSystem {
                         System.out.println(">> Invalid Outlet. Please try again.");
                     }
                 }
-                // =============================================
             }
         }
         System.out.println("Login Failed: Invalid User ID or Password");
@@ -49,7 +47,7 @@ public class LoginSystem {
         System.out.print("Enter Employee ID (e.g. C6099): ");
         String id = input.nextLine();
         
-        // Check duplicate
+        // check duplicate
         for(Employee e : dm.getEmployees()) {
             if(e.getEmployeeID().equalsIgnoreCase(id)) {
                 System.out.println("ID already exists!");
@@ -64,7 +62,6 @@ public class LoginSystem {
         System.out.print("Set Password: ");
         String pass = input.nextLine();
 
-        // Note: New employees don't have an outlet yet, passing "Unknown" or null
         Employee newEmp = new Employee(id, name, role, pass);
         dm.getEmployees().add(newEmp);
         dm.saveEmployees();
