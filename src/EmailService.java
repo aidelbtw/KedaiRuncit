@@ -7,12 +7,9 @@ import javax.activation.*;
 
 public class EmailService {
 
-    // =================================================================
     // CONFIGURATION
-    // =================================================================
     private static final String SENDER_EMAIL = "haqimnazry@gmail.com"; 
     private static final String APP_PASSWORD = "xgvg vvyb ghzv wxda"; 
-    // =================================================================
 
     private static File generateDailyAttachment(DataManager dm) {
         LocalDate today = LocalDate.now();
@@ -28,7 +25,6 @@ public class EmailService {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 
-                // === FIX IS HERE ===
                 // 1. Check length >= 4 (because we need index 3)
                 // 2. Read parts[3] (Price) instead of parts[2] (Quantity)
                 if (parts.length >= 4 && parts[0].equals(today.toString())) {

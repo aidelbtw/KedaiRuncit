@@ -15,7 +15,7 @@ public class StockManagement {
 
     public static void manage(DataManager dm, Employee emp) {
         while (true) {
-            System.out.println("\n=== STOCK MANAGEMENT ===");
+            System.out.println("\n=== STOCK MANAGEMENT (" + emp.getOutlet() + ") ===");
             System.out.println("1. Perform Stock Count");
             System.out.println("2. Stock In");
             System.out.println("3. Stock Out");
@@ -28,7 +28,7 @@ public class StockManagement {
             } catch (NumberFormatException e) { continue; }
 
             switch (choice) {
-                case 1: performStockCount(dm); break;
+                case 1: performStockCount(dm, emp); break; // Pass emp
                 case 2: handleStockMovement(dm, emp, true); break;  // Stock In
                 case 3: handleStockMovement(dm, emp, false); break; // Stock Out
                 case 4: return;
@@ -36,10 +36,10 @@ public class StockManagement {
         }
     }
 
-    private static void performStockCount(DataManager dm) {
-        System.out.println("\n=== Stock Count ===");
-        String outletCode = getValidOutletInput("Enter Outlet Code to Count (e.g., C60): ");
-        if(outletCode == null) return; 
+    private static void performStockCount(DataManager dm, Employee emp) {
+        // === FIX: Auto-detect outlet ===
+        String outletCode = emp.getOutlet();
+        System.out.println("\n=== Stock Count for " + outletCode + " ===");
 
         System.out.println("1. Morning | 2. Night");
         String session = input.nextLine().equals("1") ? "Morning" : "Night";
@@ -68,23 +68,32 @@ public class StockManagement {
         String typeHeader = isStockIn ? "=== Stock In ===" : "=== Stock Out ===";
         System.out.println("\n" + typeHeader);
         
-        // 1. IDENTIFY SOURCE AND DESTINATION
-        String fromLocation = getValidOutletInput("From (Outlet Code): ");
-        if (fromLocation == null) return;
-        
-        // --- NEW LOGIC: Loop until a valid "To" location (NOT HQ) is entered ---
+        String fromLocation;
         String toLocation;
-        while (true) {
-            toLocation = getValidOutletInput("To (Outlet Code): ");
-            if (toLocation == null) return; // User cancelled
+        String currentOutlet = emp.getOutlet(); // === FIX: Get Session Outlet ===
 
-            // BLOCK HQ HERE
+        // === FIX: Auto-fill logic ===
+        if (isStockIn) {
+            // WE are receiving stock. Destination is US.
+            toLocation = currentOutlet;
+            System.out.println("Receiving Stock INTO: " + toLocation);
+            
+            // Only ask where it came from
+            fromLocation = getValidOutletInput("Source (From Outlet/HQ): ");
+            if (fromLocation == null) return;
+
+        } else {
+            // WE are sending stock. Source is US.
+            fromLocation = currentOutlet;
+            System.out.println("Sending Stock FROM: " + fromLocation);
+            
+            // Only ask where it is going
+            toLocation = getValidOutletInput("Destination (To Outlet/HQ): ");
+            if (toLocation == null) return;
+            
             if (toLocation.equalsIgnoreCase("HQ")) {
-                System.out.println(">> Restricted: You cannot transfer stock TO HQ.");
-                System.out.println(">> Please enter a shop outlet (e.g., C60).");
-                continue; // Ask again
+                 System.out.println(">> Warning: Returning stock to HQ.");
             }
-            break; // Valid input
         }
 
         // 2. SELECT ITEMS & VALIDATE SOURCE STOCK
@@ -108,14 +117,13 @@ public class StockManagement {
                 System.out.println("Invalid number."); continue;
             }
 
-            // If the stock comes FROM "HQ", we assume unlimited/warehouse stock.
-            // If it comes from another outlet (e.g., C60), we MUST check if C60 has enough.
+            // CHECK SOURCE STOCK
             if (!fromLocation.equalsIgnoreCase("HQ")) {
                 int stockAtSource = p.getStockByOutletCode(fromLocation, dm);
                 if (qty > stockAtSource) {
                     System.out.println(">> ERROR: " + fromLocation + " only has " + stockAtSource + " units.");
                     System.out.println(">> Cannot transfer " + qty + ".");
-                    continue; // Skip this item, ask again
+                    continue; 
                 }
             }
 
@@ -126,30 +134,27 @@ public class StockManagement {
 
         if(totalQty == 0) return;
 
-        // 3. UPDATE DATABASE (BOTH SIDES)
+        // 3. UPDATE DATABASE
         for(int i = 0; i < selectedProducts.size(); i++) {
             Product p = selectedProducts.get(i);
             int qty = selectedQuantities.get(i);
 
-            // A. SUBTRACT FROM SOURCE (Unless it's HQ)
             if (!fromLocation.equalsIgnoreCase("HQ")) {
                 int currentSource = p.getStockByOutletCode(fromLocation, dm);
                 p.setStockByOutletCode(fromLocation, dm, currentSource - qty);
             }
 
-            // B. ADD TO DESTINATION 
-            // We know toLocation is NOT HQ because we blocked it above.
-            int currentDest = p.getStockByOutletCode(toLocation, dm);
-            p.setStockByOutletCode(toLocation, dm, currentDest + qty);
+            if (!toLocation.equalsIgnoreCase("HQ")) {
+                int currentDest = p.getStockByOutletCode(toLocation, dm);
+                p.setStockByOutletCode(toLocation, dm, currentDest + qty);
+            }
         }
         dm.saveProducts();
 
         // 4. GENERATE RECEIPT
         LocalDate date = LocalDate.now();
         String timeStr = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"))
-                         .toLowerCase()
-                         .replace("am", "a.m.")
-                         .replace("pm", "p.m.");
+                          .toLowerCase().replace("am", "a.m.").replace("pm", "p.m.");
 
         StringBuilder receiptContent = new StringBuilder();
         receiptContent.append(typeHeader).append("\n");
@@ -175,9 +180,8 @@ public class StockManagement {
             System.out.println("Error saving receipt.");
         }
 
-        System.out.println("Model quantities updated successfully.");
-        System.out.println("Transfer recorded.");
-        System.out.println("Receipt generated: receipts_" + date + ".txt");
+        System.out.println("Transfer recorded successfully.");
+        System.out.println("Receipt generated: " + filename);
     }
 
     private static String getValidOutletInput(String prompt) {
@@ -195,7 +199,6 @@ public class StockManagement {
             }
             System.out.println(">> Error: Outlet '" + rawInput + "' does not exist.");
             System.out.println(">> Valid Outlets: " + VALID_OUTLETS);
-            System.out.println(">> Please re-enter (or type 'cancel').");
         }
     }
 }

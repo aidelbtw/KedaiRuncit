@@ -18,8 +18,16 @@ public class SalesSystem {
         System.out.println("Date: " + date);
         System.out.println("Time: " + timeStr);
 
-        System.out.print("Enter Outlet Code (e.g., C60): ");
-        String outletCode = input.nextLine().trim();
+        // === FIX START: Auto-detect Outlet ===
+        String outletCode = user.getOutlet();
+        System.out.println("Session Outlet: " + outletCode);
+
+        // Security: HQ usually cannot sell retail items
+        if (outletCode.equalsIgnoreCase("HQ")) {
+            System.out.println(">> ERROR: HQ cannot perform retail sales transactions.");
+            return;
+        }
+        // === FIX END ===
 
         System.out.print("Customer Name: ");
         String customerName = input.nextLine();
@@ -107,7 +115,7 @@ public class SalesSystem {
              PrintWriter pw = new PrintWriter(fw)) {
             
             pw.println("=========================================");
-            pw.println("             OFFICIAL RECEIPT            ");
+            pw.println("            OFFICIAL RECEIPT             ");
             pw.println("=========================================");
             pw.println("Date: " + date + "  Time: " + time);
             pw.println("Outlet: " + outlet);
@@ -135,7 +143,6 @@ public class SalesSystem {
         }
     }
 
-    // === NEW METHOD FOR ANALYTICS ===
     private static void saveToHistory(LocalDate date, List<Product> items, List<Integer> qtys) {
         // Format: Date, Model, Quantity, TotalPriceForThisItem
         try (FileWriter fw = new FileWriter("../data/sales_history.csv", true);
