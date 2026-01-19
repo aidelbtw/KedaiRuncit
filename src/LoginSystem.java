@@ -1,6 +1,12 @@
 import java.util.*;
 
 public class LoginSystem {
+    
+    // Hardcoded list of valid shops to prevent typos
+    private static final List<String> VALID_OUTLETS = Arrays.asList(
+        "C60", "C61", "C62", "C63", "C64", "C65", "C66", "C67", "C68", "C69", "HQ"
+    );
+
     public static Employee login(List<Employee> employees) {
         Scanner input = new Scanner(System.in);
         System.out.print("Enter User ID: ");
@@ -10,9 +16,27 @@ public class LoginSystem {
 
         for(Employee e : employees){
             if(e.getEmployeeID().equalsIgnoreCase(id) && e.getPassword().equals(pass)){
-                System.out.println("Login Successful!");
-                System.out.println("Welcome, " + e.getEmployeeName() + " (" + e.getOutlet() + ")");
-                return e;
+                System.out.println(">> Password Accepted.");
+
+                // === NEW FEATURE: SESSION OUTLET SELECTION ===
+                while (true) {
+                    System.out.println("\nWhere are you working today?");
+                    System.out.println("Valid Outlets: " + VALID_OUTLETS);
+                    System.out.print("Enter Outlet Code: ");
+                    String outletInput = input.nextLine().toUpperCase().trim();
+
+                    if (VALID_OUTLETS.contains(outletInput)) {
+                        // Set the session outlet for this user
+                        e.setOutlet(outletInput); 
+                        
+                        System.out.println("Login Successful!");
+                        System.out.println("Welcome, " + e.getEmployeeName() + " (Session: " + e.getOutlet() + ")");
+                        return e;
+                    } else {
+                        System.out.println(">> Invalid Outlet. Please try again.");
+                    }
+                }
+                // =============================================
             }
         }
         System.out.println("Login Failed: Invalid User ID or Password");
@@ -40,6 +64,7 @@ public class LoginSystem {
         System.out.print("Set Password: ");
         String pass = input.nextLine();
 
+        // Note: New employees don't have an outlet yet, passing "Unknown" or null
         Employee newEmp = new Employee(id, name, role, pass);
         dm.getEmployees().add(newEmp);
         dm.saveEmployees();
