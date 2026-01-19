@@ -28,7 +28,7 @@ public class StockManagement {
             } catch (NumberFormatException e) { continue; }
 
             switch (choice) {
-                case 1: performStockCount(dm, emp); break; // Pass emp
+                case 1: performStockCount(dm, emp); break; 
                 case 2: handleStockMovement(dm, emp, true); break;  // Stock In
                 case 3: handleStockMovement(dm, emp, false); break; // Stock Out
                 case 4: return;
@@ -37,7 +37,6 @@ public class StockManagement {
     }
 
     private static void performStockCount(DataManager dm, Employee emp) {
-        // === FIX: Auto-detect outlet ===
         String outletCode = emp.getOutlet();
         System.out.println("\n=== Stock Count for " + outletCode + " ===");
 
@@ -70,9 +69,8 @@ public class StockManagement {
         
         String fromLocation;
         String toLocation;
-        String currentOutlet = emp.getOutlet(); // === FIX: Get Session Outlet ===
+        String currentOutlet = emp.getOutlet(); 
 
-        // === FIX: Auto-fill logic ===
         if (isStockIn) {
             // WE are receiving stock. Destination is US.
             toLocation = currentOutlet;
@@ -153,12 +151,17 @@ public class StockManagement {
 
         // 4. GENERATE RECEIPT
         LocalDate date = LocalDate.now();
+        
+        // === FIX START: Friendly Date ===
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        // === FIX END ===
+
         String timeStr = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"))
                           .toLowerCase().replace("am", "a.m.").replace("pm", "p.m.");
 
         StringBuilder receiptContent = new StringBuilder();
         receiptContent.append(typeHeader).append("\n");
-        receiptContent.append("Date: ").append(date).append("\n");
+        receiptContent.append("Date: ").append(formattedDate).append("\n"); // Use Friendly Date
         receiptContent.append("Time: ").append(timeStr).append("\n");
         receiptContent.append("From: ").append(fromLocation).append("\n");
         receiptContent.append("To: ").append(toLocation).append("\n");
@@ -172,6 +175,7 @@ public class StockManagement {
         receiptContent.append("Employee in Charge: ").append(emp.getName()).append("\n"); 
         receiptContent.append("\n"); 
 
+        // Keep Filename as yyyy-mm-dd
         String filename = "../sales/receipts_" + date + ".txt";
         try (FileWriter fw = new FileWriter(filename, true);
              PrintWriter pw = new PrintWriter(fw)) {
