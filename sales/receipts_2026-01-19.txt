@@ -38,3 +38,23 @@ Models Sent:
 Total Quantity: 2
 Employee in Charge: Tan Guan Han
 
+=== Stock In ===
+Date: 19/01/2026
+Time: 12:10 p.m.
+From: HQ
+To: C60
+Models Received:
+- SW2500-4 (Quantity: 3)
+Total Quantity: 3
+Employee in Charge: Tan Guan Han
+
+=== Stock Out ===
+Date: 19/01/2026
+Time: 12:10 p.m.
+From: C60
+To: C62
+Models Sent:
+- SW2500-4 (Quantity: 3)
+Total Quantity: 3
+Employee in Charge: Tan Guan Han
+
