@@ -71,7 +71,7 @@ public class AnalyticsSystem {
             System.out.println("2. Most Sold Product Model");
             System.out.println("3. Average Daily Revenue");
             System.out.println("4. Filter & Sort Transactions");
-            System.out.println("5. Employee Performance Leaderboard"); // <--- ADDED BACK
+            System.out.println("5. Employee Performance Leaderboard");
             System.out.println("6. Back to Main Menu");
             System.out.print("Choice: ");
             
@@ -200,4 +200,5 @@ public class AnalyticsSystem {
             System.out.printf("%-12s | %-15s | %-15s | %8.2f\n", r.dateObj, r.custName, r.model, r.revenue);
         }
     }
+
 }
